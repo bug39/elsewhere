@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import { signal } from '@preact/signals'
+import { PasscodeGate } from './components/PasscodeGate'
 import { Header } from './components/Header'
 import { LibraryPanel } from './components/LibraryPanel'
 import { Viewport } from './components/Viewport'
@@ -58,6 +59,7 @@ function loadPanelState() {
 }
 
 export function App() {
+  const [authenticated, setAuthenticated] = useState(null) // null = checking, false = no, true = yes
   const world = useWorld()
   const selection = useSelection()
   const viewportRef = useRef(null)
@@ -86,8 +88,17 @@ export function App() {
     updatePanelState({ libraryCollapsed: !panelState.libraryCollapsed })
   }, [panelState.libraryCollapsed, updatePanelState])
 
-  // Load feature flags and generation queue on mount
+  // Check auth on mount
   useEffect(() => {
+    fetch('/api/auth/check')
+      .then(r => r.json())
+      .then(data => setAuthenticated(data.authenticated))
+      .catch(() => setAuthenticated(false))
+  }, [])
+
+  // Load feature flags and generation queue on mount (after auth)
+  useEffect(() => {
+    if (!authenticated) return
     loadFeatureFlags()
     // P1-005 FIX: Recover orphaned worlds before loading queue
     recoverOrphanedWorlds().then(async () => {
@@ -108,7 +119,7 @@ export function App() {
         }
       }
     })
-  }, [])
+  }, [authenticated])
 
   // Auto-start onboarding for new users entering edit mode
   useEffect(() => {
@@ -366,6 +377,14 @@ export function App() {
       }, 300)
     }
   }, [])
+
+  // Auth gate
+  if (authenticated === null) {
+    return null // Checking auth, show nothing
+  }
+  if (!authenticated) {
+    return <PasscodeGate onAuthenticated={() => setAuthenticated(true)} />
+  }
 
   // Show home screen if not editing or playing
   if (appMode.value === 'home') {
