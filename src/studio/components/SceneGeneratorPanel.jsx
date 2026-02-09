@@ -45,7 +45,6 @@ export function SceneGeneratorPanel({
   const [evaluationHistory, setEvaluationHistory] = useState([])
   const [generatedAssets, setGeneratedAssets] = useState([])
   const [error, setError] = useState(null)
-  const [useV2, setUseV2] = useState(false) // Experimental V2 prompt mode
 
   const agentRef = useRef(null)
   const textareaRef = useRef(null)
@@ -126,7 +125,7 @@ export function SceneGeneratorPanel({
           worldRenderer: rendererRef.current
         },
         threeScene,
-        { mode: useV2 ? 'v2' : 'full' }
+        { mode: 'v2' }
       )
 
       if (result.success) {
@@ -271,15 +270,6 @@ export function SceneGeneratorPanel({
               {error && (
                 <div class="scene-gen-panel__error">{error}</div>
               )}
-
-              <label class="scene-gen-panel__checkbox" style="display: flex; align-items: center; gap: 8px; margin-top: var(--sp-2); font-size: 12px; color: var(--c-text-muted);">
-                <input
-                  type="checkbox"
-                  checked={useV2}
-                  onChange={(e) => setUseV2(e.target.checked)}
-                />
-                Use V2 prompt (experimental)
-              </label>
 
               <button
                 class="btn btn--primary"
