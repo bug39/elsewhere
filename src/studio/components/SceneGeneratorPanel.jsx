@@ -113,7 +113,7 @@ export function SceneGeneratorPanel({
 
       // V2 evaluation loop is now wired - enable refinement for both modes
       agentRef.current.config.enableRefinement = true
-      agentRef.current.config.maxIterations = useV2 ? 3 : 5  // V2 needs fewer iterations (better initial placement)
+      agentRef.current.config.maxIterations = 3
 
       const result = await agentRef.current.generate(
         prompt,
@@ -145,7 +145,7 @@ export function SceneGeneratorPanel({
     } finally {
       setIsGenerating(false)
     }
-  }, [prompt, world, rendererRef, useV2])
+  }, [prompt, world, rendererRef])
 
   // Handle cancel
   const handleCancel = useCallback(() => {
