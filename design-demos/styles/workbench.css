@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:wght@600&display=swap');
+
+body.theme-workbench {
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --bg: linear-gradient(180deg, #f6f2ea 0%, #f2e9dd 60%, #f7f3ec 100%);
+  --panel-bg: #fffaf2;
+  --surface: #ffffff;
+  --viewport-bg: linear-gradient(180deg, #f2e8d9 0%, #ede2d3 100%);
+  --asset-thumb: linear-gradient(135deg, #e8dccb 0%, #f1e6d7 100%);
+  --text: #1e1914;
+  --text-muted: #6c6155;
+  --line: #e2d8cc;
+  --line-strong: #cdbfb1;
+  --accent: #b3561f;
+  --accent-contrast: #fff7ef;
+  --accent-soft: rgba(179, 86, 31, 0.12);
+  --link: #8e4316;
+  --shadow-color: rgba(60, 46, 34, 0.12);
+  --chip-bg: #f3ede3;
+  --chip-active: #fde6d6;
+  --callout-bg: #fbf5ed;
+}
+
+body.theme-workbench::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(54, 42, 32, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(54, 42, 32, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.theme-workbench .app {
+  position: relative;
+  z-index: 1;
+}
+
+body.theme-workbench .brand-mark {
+  background: linear-gradient(140deg, rgba(179, 86, 31, 0.12), transparent 60%);
+}
+
+body.theme-workbench h1,
+body.theme-workbench h2 {
+  font-family: var(--font-display);
+}
+
+body.theme-workbench .panel-header {
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+
+body.theme-workbench .viewport::after {
+  content: 'Scale 1:200';
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+body.theme-workbench .tool-btn {
+  border-style: dashed;
+}

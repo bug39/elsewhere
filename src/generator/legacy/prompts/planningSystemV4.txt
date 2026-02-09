@@ -1,0 +1,161 @@
+OUTPUT CONTRACT
+- Format: JSON conforming to schema v=3
+- Encoding: ASCII only (0x00-0x7F)
+- No markdown, no commentary, no explanation
+
+SCHEMA v=3
+{
+  "v": 3,
+  "cat": "character"|"creature"|"vehicle"|"building"|"prop"|"furniture"|"tool"|"nature"|"wearable",
+  "floatY": number,
+  "m": Material[1..5],
+  "p": Part[3..10],
+  "ap": AttachPoint[],
+  "anim": AnimationConfig
+}
+
+Material: { "n":string, "c":0xHEX, "r":float, "met":float, "e":0xHEX, "ei":float, "flat":bool }
+Part: { "n":string, "par":string|null, "g":GeomType, "pr":1|1.5|2|3, "mat":int, "geom":{...}, "j":Joint|null, "i":Instance[] }
+  - pr=1: Silhouette-defining (body, main structure) - NEVER removed
+  - pr=1.5: CHARACTERISTIC features (eyes, hands, ears, horns, tail) - keeps asset recognizable
+  - pr=2: Secondary features (limbs, details)
+  - pr=3: Optional accents (decorations, trim)
+Instance: { "p":[x,y,z], "r":[rx,ry,rz], "s":[sx,sy,sz] }
+Joint: { "n":string, "pos":[x,y,z], "axes":"x"|"y"|"z" }
+AttachPoint: { "n":string, "p":[x,y,z] }
+AnimationConfig: { "on":bool, "style":"none"|"bob"|"sway"|"spin"|"walk"|"flap", "j":[string] }
+
+COLOR RULES (visibility guidance)
+- Prefer visible colors that contrast well with each other
+- For dark/moody assets, ensure at least 2 contrasting colors
+- Common good colors: bright greens (0x32CD32), medium browns (0x8B4513), silver (0xA0A0A0)
+- Foliage/leaves: prefer bright greens (0x32CD32, 0x228B22, 0x90EE90)
+- Tree bark: prefer medium browns (0x8B4513, 0xA0522D, 0xCD853F)
+
+MATERIAL ROUGHNESS (r) GUIDANCE - LOW-POLY MATTE STYLE
+- Default: r=0.8, met=0.0 for ALL surfaces (matte low-poly look)
+- Wood: r=0.8
+- Stone/brick: r=0.85
+- Metal/gold/armor: r=0.7, met=0.0 (use bright COLOR for metallic look, NOT metalness)
+- Cloth: r=0.85
+- Skin/organic: r=0.75
+- CRITICAL: Always met=0.0, always r >= 0.7 (no shiny materials!)
+- Metal armor: use silver/gray COLOR (0xC0C0C0, 0xB0B0B0) with r=0.7, met=0
+- Skin tones: use warm values (0xFFDBAC, 0xE8BEAC, 0xD2B48C)
+
+ORIENTATION RULES (canonical axes)
+- Bipeds: Stand upright (spine along +Y), face +Z
+- Quadrupeds: Body horizontal along Z axis. Scale to elongate: [1,0.8,1.4]. Head at +Z, tail at -Z, 4 legs below
+- Vehicles: Length along +Z (front toward +Z)
+- Trees/Plants: Grow upward along +Y, trunk at bottom
+- Containers: Opening faces +Y (upward)
+
+COORDINATE CONVENTIONS
+- All positions are in WORLD space (not relative to parent)
+- Typical coordinate range: [-1, 1] for most parts
+- Y=0 is ground level; parts should be at Y > 0
+- Symmetric parts: use negative X for left, positive X for right
+
+VALIDATION CHECKLIST (verify before output)
+- Every part position is realistic (typically within [-1, 1] on each axis)
+- Child parts are near their parent (not 5+ units away)
+- Legs/feet have Y positions near 0 (touching ground)
+- Head/top parts have highest Y values
+- Quadruped body is elongated along Z axis using scale
+- Colors have good contrast (at least 2 distinct values)
+- sum(all instances) <= 24
+- Materials array length <= 5
+- No Tube/Lathe for simple rectangular objects (use Box)
+- No Box for organic curved bodies (use Sphere/Lathe)
+
+BUDGET CONSTRAINTS
+- sum(instances) <= 24 (target 16-20 for detailed assets)
+- materials in [3, 5] (use 3+ for visual variety)
+- parts in [3, 10]
+
+GEOMETRY PARAMS
+- Box: { "size":[x,y,z], "seg":[sx,sy,sz] }
+- Sphere: { "rad":r, "ws":<=10, "hs":<=8 }
+- Cylinder: { "rt":rTop, "rb":rBot, "h":h, "rs":<=10 }
+- Cone: { "r":r, "h":h, "rs":<=10 }
+- Torus: { "r":R, "t":tube, "rs":<=10, "ts":<=12 }
+- Lathe: { "prof":[[rad,y],...], "seg":<=14 } (pts<=12)
+- Tube: { "path":[[x,y,z],...], "ts":<=14, "rad":r, "rs":<=8 }
+
+SCOPE CONSTRAINT
+Single coherent asset only. If prompt implies scene/environment/crowd:
+- Extract single most iconic object
+- Ignore terrain, backgrounds, multiple copies
+
+PRIORITY ASSIGNMENT
+- pr=1: Silhouette-defining parts (body, main structure) - NEVER removed
+- pr=1.5: CHARACTERISTIC features (eyes, hands, ears, horns, tail) - make asset recognizable
+- pr=2: Secondary features (limbs, details)
+- pr=3: Optional accents (decorations, trim)
+
+PLANNING HEURISTICS
+- Use instances for symmetry (wheels, limbs, wings)
+- Group related parts under common parent
+- Keep geometry chunky; add characteristic features (hands, eyes, ears, horns) with pr=1.5
+- Canonical axes: Up +Y, Front +Z
+
+GEOMETRY SELECTION GUIDE
+When to use each geometry type:
+- Box: structural elements, bodies, platforms, buildings, crates, chests
+- Sphere: heads, eyes, round bodies, balls, bulbs (use scale for ovals)
+- Cylinder: limbs, poles, columns, barrels, wheels, trunks
+- Cone: spikes, horns, claws, roofs, noses, beaks
+- Torus: rings, donuts, halos, tires, bracelets
+- Lathe: organic tapered shapes, vases, tree trunks, mushroom caps, bottles
+  - Profile is [[radius, y], ...] from bottom to top
+  - Use 4-8 points for smooth organic curves
+- Tube: tentacles, tails, vines, cables, snakes, curved limbs
+  - Path is [[x,y,z], ...] defining the center curve
+  - Use 4-8 path points for natural curves
+  - Radius can taper by using different tube radii
+
+COLOR PALETTE RULES
+- Use 2-4 distinct colors for visual interest
+- Primary material: largest surfaces (body, main structure)
+- Secondary material: supporting features (limbs, roof, trim)
+- Accent material: small highlights (eyes, buttons, gems)
+- Good greens: 0x32CD32 (lime), 0x228B22 (forest), 0x90EE90 (light)
+- Good browns: 0x8B4513 (saddle), 0xA0522D (sienna), 0xCD853F (peru)
+- Good metals: 0xA0A0A0 (silver), 0xB0B0B0 (light gray), 0xD4AF37 (gold)
+- Ensure contrast between colors for visual clarity
+
+COLOR RULES - CRITICAL
+REQUIRED:
+- Each material MUST have luminance >= 0.1 (no pure black 0x000000)
+- Multi-material assets MUST have luminance spread >= 0.3 between darkest and lightest
+- Prefer 3-5 distinct materials with visible contrast
+
+AVOID THESE PATTERNS (will be rejected):
+- All-dark palette: [0x000000, 0x1A1A1A, 0x2B2B2B] - insufficient contrast
+- Pure black with accents: [0x000000, 0xFF0000] - body invisible
+- Monochrome: [0x404040, 0x505050] - no visual interest
+
+GOOD EXAMPLES:
+- Dark wizard: [0x4B0082, 0x9370DB, 0xFFD700] - purple robes (not black!) with lighter accents
+- Black cat: [0x2F2F2F, 0x808080, 0xFFFF00] - dark gray (not pure black!) with light eyes
+- Night scene: [0x191970, 0x4169E1, 0x87CEEB] - midnight blue with visible contrast
+
+PALETTE GUIDANCE BY INTENT:
+- "Black" characters: Use very dark gray (0x2F2F2F minimum), dark purple (0x4B0082), or dark blue (0x191970) - NEVER pure black
+- "Black" animals: Use very dark gray (0x1A1A1A minimum) with lighter belly/eyes (0x808080+)
+- Night/shadow themes: Use deep blue (0x191970) or purple (0x2E0854) - more visible than black
+- Dark armor: Use dark gunmetal (0x2F4F4F) or dark steel (0x36454F), not black
+
+POSITIONING RULES - CRITICAL
+When placing decorative parts (bands, trim, details) ON a parent surface:
+- MUST offset by at least 0.02 units from parent surface to prevent z-fighting
+- Example: Barrel bands at radius 0.5 -> place at radius 0.52 (not 0.5)
+- Example: Chest trim flush with body -> offset outward by 0.02
+
+BAD (z-fighting):
+Body: Cylinder radius 0.5
+Band: Torus radius 0.5 (same as body = z-fighting!)
+
+GOOD (offset):
+Body: Cylinder radius 0.5
+Band: Torus radius 0.52 (offset outward by 0.02)

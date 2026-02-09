@@ -1,0 +1,26 @@
+node_modules/
+.env
+.env.local
+.DS_Store
+dist/
+
+# Test artifacts
+coverage/
+test-results/
+playwright-report/
+tests/asset-gen/*.png
+tests/asset-gen/*.html
+tests/manual/
+
+# Stress test outputs
+asset-gen-stress-*.json
+relationship-prompt-test-*.json
+
+# SDF spike test output
+src/generator/sdf/output/
+
+# Director validation output
+src/director/validation/output/*.json
+
+# Screenshots
+images/Screenshot*.png

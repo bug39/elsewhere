@@ -1,0 +1,152 @@
+OUTPUT CONTRACT
+- Format: JSON, schema version 2
+- Encoding: ASCII only
+- No markdown, no commentary, no explanation
+
+COORDINATE SYSTEM (400m x 400m world)
+┌────────────────────────────────────────┐
+│ (0,0)           NORTH           (400,0)│
+│                                        │
+│                                        │
+│ WEST         (200,200)           EAST  │
+│               CENTER                   │
+│                                        │
+│              * CAMERA *                │
+│ (0,400)         SOUTH         (400,400)│
+└────────────────────────────────────────┘
+Player starts at SOUTH, looking NORTH. Main subjects should face SOUTH.
+
+STRUCTURE SCHEMA (placed first, become anchor points)
+{
+  "schemaVersion": 2,
+  "theme": "brief description",
+  "terrain": { "biome": "grass|desert|snow|forest|sand|volcanic" },
+  "structures": [
+    {
+      "id": "unique_snake_case_id",
+      "prompt": "detailed 3D asset description",
+      "category": "buildings|nature|props|vehicles",
+      "realWorldSize": 12,
+      "position": [x, z],
+      "facing": "south|north|east|west"
+    }
+  ],
+  "attachments": [
+    {
+      "prompt": "asset description",
+      "category": "props|nature",
+      "realWorldSize": 2,
+      "attached_to": "structure_id",
+      "anchor": "front|back|left|right|top|center|perimeter",
+      "offset": [forward, sideways],
+      "height_ratio": 0.85,
+      "facing": "toward_parent|away|inherit|north|south|east|west|random",
+      "count": 1,
+      "arrangement": "single|row|column|cluster|grid",
+      "spacing": 5,
+      "gridSize": [cols, rows]
+    }
+  ],
+  "npcs": [
+    {
+      "prompt": "character description",
+      "realWorldSize": 1.8,
+      "near": "structure_id",
+      "behavior": "idle|wander|patrol",
+      "wanderRadius": 10
+    }
+  ]
+}
+
+SPATIAL LAYOUT — USE THE FULL 400m WORLD
+The world is 400m x 400m. Structures MUST spread across it, not cluster in the center.
+
+Rules:
+- Positions within [20, 380] on each axis
+- Minimum 60m between structures (they render large; closer = overlapping)
+- Each structure MUST have unique position coordinates
+- Use ALL quadrants — north, south, east, west — not just center
+
+Composition zones (z-axis = depth from camera):
+- FOREGROUND [z: 280-370]: Smaller structures the player walks past first
+- MIDGROUND  [z: 140-280]: Main focal point, hero structure
+- BACKGROUND [z: 30-140]:  Mountains, terrain, dramatic backdrop (LARGEST)
+- Spread x-axis broadly: use 40-160 (west) and 240-360 (east), not just center
+
+Example distribution for 4 structures on a "medieval village" prompt:
+  castle:    [200, 180]  — center midground, hero focal point
+  mountain:  [300,  60]  — far northeast background, dramatic backdrop
+  tavern:    [100, 300]  — southwest foreground, player walks past
+  watchtower:[320, 240]  — east midground, balances composition
+
+SEMANTIC CONSTRAINTS
+- Unique landmarks: one Eiffel Tower, one Statue of Liberty, etc.
+- Real-world logic: cafe has 2-6 tables, not 30
+- Quality over quantity: 6 intentional items > 30 random
+- No interior items (system places in world space, not inside buildings)
+
+DENSITY GUIDANCE (not requirements)
+- Structures: 2-5 (anchor points, include backdrop terrain)
+- Attachments: 8-20 (decorations, signs, props - aim higher for richer scenes)
+- NPCs: 1-4 (populated scenes feel more alive)
+
+Prefer multiple attachments per structure to create visual interest.
+
+ATTACHMENT ANCHORS
+- front/back/left/right: vertical surfaces
+- top: roof or upper surface
+- center: geometric center
+- perimeter: edge (for scattered items, adds randomness)
+
+HEIGHT_RATIO (wall-mounted items ONLY)
+- Only use height_ratio for items mounted ON the wall (signs, lights, banners)
+- These items should have offset: [0, 0] (flush with wall surface)
+- Do NOT use height_ratio for ground-level items (tables, benches, planters)
+- Ground items use offset: [distance, 0] to place them in front of the structure
+
+ATTACHMENT OFFSET
+- [forward, sideways] in meters from anchor point
+- Positive forward = toward front of parent
+- Positive sideways = toward right of parent
+
+ATTACHMENT ARRANGEMENTS (for count > 1)
+- single: one item at offset (default)
+- row: items spread sideways, centered on offset
+- column: items spread forward/back from offset
+- cluster: organic grouping within spacing radius
+- grid: rectangular grid (use with gridSize: [cols, rows])
+
+Examples:
+- 4 benches in a row, 6m apart: count: 4, arrangement: "row", spacing: 6
+- 3 tables clustered: count: 3, arrangement: "cluster", spacing: 4
+- 2x3 grid of market stalls: count: 6, arrangement: "grid", gridSize: [2, 3], spacing: 5
+
+SIZE GUIDANCE (realistic scale)
+- Humans/NPCs: 1.8m
+- Small props (bottles, signs, chairs): 0.5-1m
+- Medium props (tables, benches, barrels): 1-2m
+- Large props (bar counters, market stalls): 2-4m
+- Small structures (kiosks, booths): 3-5m
+- Medium structures (houses, shops): 8-15m
+- Large structures (theaters, warehouses): 15-25m
+- Trees: 8-20m
+- Mountains, hills, terrain features: 30-50m (dramatic backdrop)
+- Mega-structures (bridges, monuments >50m): use category "nature" for dramatic scale
+
+IMPORTANT:
+- Attachments should be SMALLER than their parent structure
+- Background terrain (mountains, hills) should be LARGER than foreground buildings
+- A bar attached to a building should be 3-5m, not 10-15m
+
+VALIDATION CHECKLIST (verify before output)
+[ ] Each structure has unique [x, z] position
+[ ] No two structures within 60m (calculate: sqrt((x2-x1)^2 + (z2-z1)^2) >= 60)
+[ ] All positions within [20, 380] bounds
+[ ] Structures spread across at least 2 quadrants (NW/NE/SW/SE)
+[ ] Main structure faces south (toward camera)
+[ ] Background/terrain structures have z < 140 (far from camera)
+[ ] Attachments reference valid structure IDs
+[ ] No duplicate landmark types
+[ ] Attachment sizes are smaller than parent structures
+
+OUTPUT ONLY VALID JSON.

@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+body.demo-index {
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-display: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --bg: linear-gradient(180deg, #f4f2ed 0%, #f7f5f1 100%);
+  --panel-bg: #ffffff;
+  --surface: #ffffff;
+  --viewport-bg: #f0ede7;
+  --asset-thumb: linear-gradient(135deg, #efe8de 0%, #f6f1e8 100%);
+  --text: #1f1b16;
+  --text-muted: #6f655b;
+  --line: #e4ddd3;
+  --line-strong: #d3c9bd;
+  --accent: #b04a1b;
+  --accent-contrast: #fff8f1;
+  --accent-soft: rgba(176, 74, 27, 0.12);
+  --link: #8a3a14;
+  --shadow-color: rgba(50, 40, 30, 0.08);
+  --chip-bg: #f2eee7;
+  --chip-active: #fde7d8;
+  --callout-bg: #faf5ee;
+}
+
+.demo-wrapper {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.demo-title {
+  font-size: var(--text-xl);
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.demo-card {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--panel-bg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-1);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.demo-card h2 {
+  font-size: var(--text-lg);
+}
+
+.demo-card p {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.demo-card .btn {
+  width: 100%;
+}

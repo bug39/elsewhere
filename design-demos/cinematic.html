@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Screening room demo - thinq</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/cinematic.css">
+  </head>
+  <body class="theme-cinematic">
+    <div class="app">
+      <header class="app-header">
+        <div class="brand">
+          <div class="brand-mark">CUT</div>
+          <div>
+            <div class="brand-name">thinq screening room</div>
+            <span class="brand-sub">Cinematic editor</span>
+            <span class="world-meta">Sequence: Ember Fall | Autosave 55s</span>
+          </div>
+        </div>
+
+        <div class="stepper">
+          <div class="step">Build</div>
+          <div class="step active">Scene</div>
+          <div class="step">Dialogue</div>
+          <div class="step">Playtest</div>
+        </div>
+
+        <div class="header-actions">
+          <div class="mode-switch">
+            <button class="mode-btn active">Edit</button>
+            <button class="mode-btn">Play</button>
+          </div>
+          <button class="btn ghost">Save</button>
+          <button class="btn primary">Render preview</button>
+        </div>
+      </header>
+
+      <div class="app-body">
+        <aside class="panel fade-in">
+          <div class="panel-header">
+            Asset Reels
+            <span>12</span>
+          </div>
+          <div class="panel-section">
+            <div class="search">
+              Filter
+              <input type="text" placeholder="Fog, ridge, traveler...">
+            </div>
+            <div class="chips">
+              <span class="chip active">All</span>
+              <span class="chip">Sets</span>
+              <span class="chip">Cast</span>
+              <span class="chip">FX</span>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="asset-grid">
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Ridge set</strong>
+                <div class="asset-meta"><span>Set</span><span>Wide</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Market glow</strong>
+                <div class="asset-meta"><span>FX</span><span>Loop</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Traveler</strong>
+                <div class="asset-meta"><span>Cast</span><span>Lead</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Night wind</strong>
+                <div class="asset-meta"><span>FX</span><span>Loop</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="callout">
+              <strong>Scene health</strong>
+              Performance budget at 68 percent. Consider merging props.
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button class="btn primary">Generate take</button>
+            <button class="btn">Queue 3</button>
+          </div>
+        </aside>
+
+        <section class="viewport-panel fade-in delay-1">
+          <div class="viewport-topbar">
+            <span>Tool: Camera | Framing on | Safe area</span>
+            <span class="status-pill">Shot 07</span>
+          </div>
+          <div class="viewport">
+            <div class="viewport-hud">
+              <div class="tool-stack">
+                <div class="tool-btn"><span class="tool-key">C</span><span>Camera</span></div>
+                <div class="tool-btn"><span class="tool-key">M</span><span>Move</span></div>
+                <div class="tool-btn"><span class="tool-key">L</span><span>Light</span></div>
+                <div class="tool-btn"><span class="tool-key">F</span><span>FX</span></div>
+              </div>
+              <div class="viewport-hint">Drag to adjust the camera path.</div>
+            </div>
+          </div>
+          <div class="viewport-footer">
+            <span>Selected: Traveler | Focus 3.2m | Lens 35mm</span>
+            <span>Shortcuts: C M L F, G R S</span>
+          </div>
+        </section>
+
+        <aside class="panel fade-in delay-2">
+          <div class="panel-header">Shot Controls</div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Selection</div>
+              <div class="list">
+                <div class="list-item"><span>Name</span><span>Traveler</span></div>
+                <div class="list-item"><span>State</span><span>Walk loop</span></div>
+                <div class="list-item"><span>Dialogue</span><span>Ready</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Camera</div>
+              <div class="input-row">
+                <input class="input" value="Focus 3.2">
+                <input class="input" value="Aperture 2.4">
+              </div>
+              <div class="input-row">
+                <input class="input" value="Speed 0.8">
+                <input class="input" value="Drift 0.2">
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Lighting</div>
+              <div class="list">
+                <div class="list-item"><span>Key light</span><span>Warm 75</span></div>
+                <div class="list-item"><span>Fog</span><span>18 percent</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button class="btn">Edit parts</button>
+            <button class="btn primary">Edit dialogue</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

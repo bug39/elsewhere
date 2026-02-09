@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Atlas workbench demo - thinq</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/workbench.css">
+  </head>
+  <body class="theme-workbench">
+    <div class="app">
+      <header class="app-header">
+        <div class="brand">
+          <div class="brand-mark">ATLS</div>
+          <div>
+            <div class="brand-name">thinq atlas</div>
+            <span class="brand-sub">Workbench system</span>
+            <span class="world-meta">World: Ashridge Valley | Autosave 42s</span>
+          </div>
+        </div>
+
+        <div class="stepper">
+          <div class="step active">Generate</div>
+          <div class="step">Arrange</div>
+          <div class="step">Script</div>
+          <div class="step">Play</div>
+          <div class="step">Share</div>
+        </div>
+
+        <div class="header-actions">
+          <div class="mode-switch">
+            <button class="mode-btn active">Edit</button>
+            <button class="mode-btn">Play</button>
+          </div>
+          <button class="btn ghost">Save</button>
+          <button class="btn primary">Play</button>
+        </div>
+      </header>
+
+      <div class="app-body">
+        <aside class="panel fade-in">
+          <div class="panel-header">
+            Asset Library
+            <span>18</span>
+          </div>
+          <div class="panel-section">
+            <div class="search">
+              Search assets
+              <input type="text" placeholder="Stone bridge, market...">
+            </div>
+            <div class="chips">
+              <span class="chip active">All</span>
+              <span class="chip">Structures</span>
+              <span class="chip">Nature</span>
+              <span class="chip">Props</span>
+              <span class="chip">Characters</span>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="asset-grid">
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Hill chapel</strong>
+                <div class="asset-meta"><span>Structure</span><span>2m</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Granite bridge</strong>
+                <div class="asset-meta"><span>Structure</span><span>6m</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Market cart</strong>
+                <div class="asset-meta"><span>Prop</span><span>1m</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Signal fire</strong>
+                <div class="asset-meta"><span>Prop</span><span>3m</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="callout">
+              <strong>Setup required</strong>
+              Add your Gemini key to enable generation. Until then, only saved assets are available.
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button class="btn primary">Generate asset</button>
+            <button class="btn">Queue 2</button>
+          </div>
+        </aside>
+
+        <section class="viewport-panel fade-in delay-1">
+          <div class="viewport-topbar">
+            <span>Tool: Place | Grid 1m | Snap on</span>
+            <span class="status-pill">Editing</span>
+          </div>
+          <div class="viewport">
+            <div class="viewport-hud">
+              <div class="tool-stack">
+                <div class="tool-btn"><span class="tool-key">V</span><span>Select</span></div>
+                <div class="tool-btn"><span class="tool-key">P</span><span>Place</span></div>
+                <div class="tool-btn"><span class="tool-key">T</span><span>Terrain</span></div>
+                <div class="tool-btn"><span class="tool-key">X</span><span>Delete</span></div>
+              </div>
+              <div class="viewport-hint">Drag from the library to place. Hold Shift to constrain axis.</div>
+            </div>
+          </div>
+          <div class="viewport-footer">
+            <span>Selected: Windmill | Transform: Move</span>
+            <span>Shortcuts: V P T X, G R S</span>
+          </div>
+        </section>
+
+        <aside class="panel fade-in delay-2">
+          <div class="panel-header">Inspector</div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Selection</div>
+              <div class="list">
+                <div class="list-item"><span>Name</span><span>Windmill</span></div>
+                <div class="list-item"><span>Category</span><span>Structure</span></div>
+                <div class="list-item"><span>Behavior</span><span>Idle</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Transform</div>
+              <div class="input-row">
+                <input class="input" value="X 142">
+                <input class="input" value="Y 0">
+              </div>
+              <div class="input-row">
+                <input class="input" value="Z 84">
+                <input class="input" value="Rot 15">
+              </div>
+              <div class="input-row">
+                <input class="input" value="Scale 1.2">
+                <input class="input" value="Snap 0.5">
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Next steps</div>
+              <div class="list">
+                <div class="list-item"><span>Edit dialogue</span><span>Pending</span></div>
+                <div class="list-item"><span>Set patrol route</span><span>Optional</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button class="btn">Edit parts</button>
+            <button class="btn primary">Dialogue</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

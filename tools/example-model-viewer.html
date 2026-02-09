@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Prompt Example Models Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+    }
+    header {
+      padding: 20px;
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; }
+    .subtitle { color: #888; font-size: 0.9rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .model-card {
+      background: #16213e;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #0f3460;
+    }
+    .model-header {
+      padding: 16px;
+      border-bottom: 1px solid #0f3460;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .model-title { font-weight: 600; }
+    .model-stats {
+      font-size: 0.8rem;
+      color: #888;
+      display: flex;
+      gap: 12px;
+    }
+    .stat {
+      background: #0f3460;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .stat.warning { background: #8b4513; color: #ffa500; }
+    .stat.error { background: #8b0000; color: #ff6b6b; }
+    .canvas-container {
+      height: 350px;
+      position: relative;
+    }
+    .canvas-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .issues {
+      padding: 12px 16px;
+      background: #1a1a2e;
+      border-top: 1px solid #0f3460;
+      font-size: 0.85rem;
+    }
+    .issue {
+      padding: 6px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .issue-icon { flex-shrink: 0; }
+    .issue-warn { color: #ffa500; }
+    .issue-error { color: #ff6b6b; }
+    .issue-info { color: #64b5f6; }
+    .json-toggle {
+      padding: 8px 16px;
+      background: #0f3460;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      font-size: 0.8rem;
+    }
+    .json-toggle:hover { background: #1a4a7a; color: #fff; }
+    .json-content {
+      display: none;
+      padding: 12px 16px;
+      background: #0a0a1a;
+      font-family: monospace;
+      font-size: 0.75rem;
+      max-height: 300px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .json-content.open { display: block; }
+    .controls {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      display: flex;
+      gap: 8px;
+    }
+    .control-btn {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid #444;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .control-btn:hover { background: rgba(0,0,0,0.8); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>System Prompt Example Models</h1>
+    <p class="subtitle">Visual inspection of examples from src/generator/systemPrompts.js - check for issues causing generation overfitting</p>
+  </header>
+  <div class="grid" id="grid"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // Example models from systemPrompts.js PLANNING_SYSTEM_PROMPT_V4
+    const EXAMPLES = [
+      {
+        name: "Basic Humanoid",
+        description: "Lines 252-253",
+        schema: {"v":3,"cat":"character","floatY":0,"m":[{"n":"skin","c":16768940,"r":0.7,"met":0,"flat":true},{"n":"clothing","c":4286945,"r":0.7,"met":0,"flat":true}],"p":[{"n":"torso","par":null,"g":"Box","pr":1,"mat":1,"geom":{"size":[0.4,0.5,0.25]},"i":[{"p":[0,0.75,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"head","par":"torso","g":"Sphere","pr":1,"mat":0,"geom":{"rad":0.18,"ws":8,"hs":6},"i":[{"p":[0,1.15,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"legs","par":"torso","g":"Cylinder","pr":1,"mat":1,"geom":{"rt":0.08,"rb":0.08,"h":0.5,"rs":6},"j":{"n":"hip","pos":[0,0.5,0],"axes":"x"},"i":[{"p":[-0.12,0.25,0],"r":[0,0,0],"s":[1,1,1]},{"p":[0.12,0.25,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"arms","par":"torso","g":"Cylinder","pr":2,"mat":0,"geom":{"rt":0.05,"rb":0.06,"h":0.4,"rs":6},"j":{"n":"shoulder","pos":[0,0.95,0],"axes":"x"},"i":[{"p":[-0.28,0.75,0],"r":[0,0,0.2],"s":[1,1,1]},{"p":[0.28,0.75,0],"r":[0,0,-0.2],"s":[1,1,1]}]}],"ap":[],"anim":{"on":false,"style":"none","j":[]}}
+      },
+      {
+        name: "Detailed Knight",
+        description: "Lines 256-257 (18 meshes)",
+        schema: {"v":3,"cat":"character","floatY":0,"m":[{"n":"armor","c":11184810,"r":0.4,"met":0.6,"flat":true},{"n":"skin","c":16768940,"r":0.7,"met":0,"flat":true},{"n":"cloth","c":9109504,"r":0.7,"met":0,"flat":true}],"p":[{"n":"torso","par":null,"g":"Box","pr":1,"mat":0,"geom":{"size":[0.4,0.5,0.25]},"i":[{"p":[0,0.75,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"head","par":"torso","g":"Sphere","pr":1,"mat":1,"geom":{"rad":0.18,"ws":8,"hs":6},"i":[{"p":[0,1.15,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"helmet","par":"head","g":"Cylinder","pr":1.5,"mat":0,"geom":{"rt":0.16,"rb":0.19,"h":0.15,"rs":8},"i":[{"p":[0,1.2,0],"r":[0,0,0],"s":[1,0.8,1]}]},{"n":"visor","par":"head","g":"Box","pr":2,"mat":0,"geom":{"size":[0.15,0.05,0.02]},"i":[{"p":[0,1.15,0.18],"r":[0,0,0],"s":[1,1,1]}]},{"n":"legs","par":"torso","g":"Cylinder","pr":1,"mat":0,"geom":{"rt":0.08,"rb":0.08,"h":0.5,"rs":6},"j":{"n":"hip","pos":[0,0.5,0],"axes":"x"},"i":[{"p":[-0.12,0.25,0],"r":[0,0,0],"s":[1,1,1]},{"p":[0.12,0.25,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"feet","par":"torso","g":"Box","pr":1.5,"mat":0,"geom":{"size":[0.1,0.06,0.14]},"i":[{"p":[-0.12,0.03,0.02],"r":[0,0,0],"s":[1,1,1]},{"p":[0.12,0.03,0.02],"r":[0,0,0],"s":[1,1,1]}]},{"n":"arms","par":"torso","g":"Cylinder","pr":1,"mat":0,"geom":{"rt":0.05,"rb":0.06,"h":0.4,"rs":6},"j":{"n":"shoulder","pos":[0,0.95,0],"axes":"x"},"i":[{"p":[-0.28,0.75,0],"r":[0,0,0.2],"s":[1,1,1]},{"p":[0.28,0.75,0],"r":[0,0,-0.2],"s":[1,1,1]}]},{"n":"hands","par":"torso","g":"Sphere","pr":1.5,"mat":1,"geom":{"rad":0.05,"ws":6,"hs":4},"i":[{"p":[-0.28,0.4,0],"r":[0,0,0],"s":[1.2,1,1]},{"p":[0.28,0.4,0],"r":[0,0,0],"s":[1.2,1,1]}]},{"n":"sword","par":"torso","g":"Box","pr":2,"mat":0,"geom":{"size":[0.02,0.5,0.08]},"i":[{"p":[0.32,0.65,0],"r":[0,0,0.2],"s":[1,1,1]}]},{"n":"shoulder_plates","par":"torso","g":"Box","pr":2,"mat":0,"geom":{"size":[0.14,0.08,0.12]},"i":[{"p":[-0.27,0.95,0],"r":[0,0,0.3],"s":[1,1,1]},{"p":[0.27,0.95,0],"r":[0,0,-0.3],"s":[1,1,1]}]}],"ap":[],"anim":{"on":false,"style":"none","j":[]}}
+      },
+      {
+        name: "Quadruped Dragon",
+        description: "Lines 260-261",
+        schema: {"v":3,"cat":"creature","floatY":0,"m":[{"n":"scales","c":3329330,"r":0.6,"met":0.1,"flat":true},{"n":"belly","c":9498256,"r":0.7,"met":0,"flat":true},{"n":"eyes","c":16766720,"r":0.3,"met":0,"e":16766720,"ei":0.5,"flat":true}],"p":[{"n":"body","par":null,"g":"Sphere","pr":1,"mat":0,"geom":{"rad":0.35,"ws":8,"hs":6},"i":[{"p":[0,0.4,0],"r":[0,0,0],"s":[1,0.8,1.4]}]},{"n":"head","par":"body","g":"Sphere","pr":1,"mat":0,"geom":{"rad":0.2,"ws":8,"hs":6},"i":[{"p":[0,0.5,0.5],"r":[0,0,0],"s":[0.9,0.8,1.1]}]},{"n":"snout","par":"head","g":"Cone","pr":2,"mat":0,"geom":{"r":0.1,"h":0.2,"rs":6},"i":[{"p":[0,0.45,0.7],"r":[-1.57,0,0],"s":[1,1,1]}]},{"n":"eyes","par":"head","g":"Sphere","pr":2,"mat":2,"geom":{"rad":0.04,"ws":6,"hs":4},"i":[{"p":[-0.1,0.55,0.6],"r":[0,0,0],"s":[1,1,1]},{"p":[0.1,0.55,0.6],"r":[0,0,0],"s":[1,1,1]}]},{"n":"legs","par":"body","g":"Cylinder","pr":1,"mat":0,"geom":{"rt":0.06,"rb":0.07,"h":0.35,"rs":6},"i":[{"p":[-0.2,0.17,0.25],"r":[0,0,0],"s":[1,1,1]},{"p":[0.2,0.17,0.25],"r":[0,0,0],"s":[1,1,1]},{"p":[-0.2,0.17,-0.25],"r":[0,0,0],"s":[1,1,1]},{"p":[0.2,0.17,-0.25],"r":[0,0,0],"s":[1,1,1]}]},{"n":"tail","par":"body","g":"Cone","pr":2,"mat":0,"geom":{"r":0.08,"h":0.5,"rs":6},"i":[{"p":[0,0.35,-0.55],"r":[1.2,0,0],"s":[1,1,1]}]},{"n":"wings","par":"body","g":"Box","pr":2,"mat":0,"geom":{"size":[0.5,0.02,0.35]},"j":{"n":"wing_pivot","pos":[0,0.55,0],"axes":"z"},"i":[{"p":[-0.35,0.55,0],"r":[0,0,0.3],"s":[1,1,1]},{"p":[0.35,0.55,0],"r":[0,0,-0.3],"s":[1,1,1]}]}],"ap":[],"anim":{"on":true,"style":"flap","j":["wing_pivot"]}}
+      },
+      {
+        name: "Treasure Chest",
+        description: "Lines 264-265",
+        schema: {"v":3,"cat":"prop","floatY":0,"m":[{"n":"wood","c":9127187,"r":0.8,"met":0,"flat":true},{"n":"metal","c":12092939,"r":0.4,"met":0.5,"flat":true}],"p":[{"n":"body","par":null,"g":"Box","pr":1,"mat":0,"geom":{"size":[0.7,0.4,0.45]},"i":[{"p":[0,0.2,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"lid","par":"body","g":"Box","pr":1,"mat":0,"geom":{"size":[0.72,0.08,0.47]},"i":[{"p":[0,0.44,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"bands","par":"body","g":"Box","pr":2,"mat":1,"geom":{"size":[0.72,0.05,0.02]},"i":[{"p":[0,0.15,0.23],"r":[0,0,0],"s":[1,1,1]},{"p":[0,0.15,-0.23],"r":[0,0,0],"s":[1,1,1]}]},{"n":"lock","par":"body","g":"Box","pr":2,"mat":1,"geom":{"size":[0.1,0.08,0.03]},"i":[{"p":[0,0.38,0.24],"r":[0,0,0],"s":[1,1,1]}]},{"n":"corners","par":"body","g":"Box","pr":3,"mat":1,"geom":{"size":[0.06,0.42,0.06]},"i":[{"p":[-0.34,0.21,0.21],"r":[0,0,0],"s":[1,1,1]},{"p":[0.34,0.21,0.21],"r":[0,0,0],"s":[1,1,1]},{"p":[-0.34,0.21,-0.21],"r":[0,0,0],"s":[1,1,1]},{"p":[0.34,0.21,-0.21],"r":[0,0,0],"s":[1,1,1]}]}],"ap":[],"anim":{"on":false,"style":"none","j":[]}}
+      },
+      {
+        name: "Tree",
+        description: "Lines 268-269",
+        schema: {"v":3,"cat":"nature","floatY":0,"m":[{"n":"bark","c":9127187,"r":0.8,"met":0,"flat":true},{"n":"foliage","c":3329330,"r":0.7,"met":0,"flat":true}],"p":[{"n":"trunk","par":null,"g":"Cylinder","pr":1,"mat":0,"geom":{"rt":0.08,"rb":0.15,"h":0.8,"rs":6},"i":[{"p":[0,0.4,0],"r":[0,0,0],"s":[1,1,1]}]},{"n":"canopy","par":"trunk","g":"Sphere","pr":1,"mat":1,"geom":{"rad":0.5,"ws":8,"hs":6},"i":[{"p":[0,1.1,0],"r":[0,0,0],"s":[1,0.8,1]},{"p":[-0.25,0.95,0.15],"r":[0,0,0],"s":[0.7,0.6,0.7]},{"p":[0.2,0.9,-0.15],"r":[0,0,0],"s":[0.6,0.5,0.6]}]}],"ap":[],"anim":{"on":false,"style":"none","j":[]}}
+      }
+    ];
+
+    // Analyze schema for potential issues
+    function analyzeSchema(schema) {
+      const issues = [];
+
+      // Count total meshes
+      let totalMeshes = 0;
+      for (const part of schema.p) {
+        totalMeshes += part.i.length;
+      }
+
+      // Check material count
+      if (schema.m.length < 3) {
+        issues.push({ type: 'warn', msg: `Only ${schema.m.length} materials (guideline says 3-5 for variety)` });
+      }
+
+      // Check for metalness violations
+      for (const mat of schema.m) {
+        if (mat.met > 0) {
+          issues.push({ type: 'warn', msg: `Material "${mat.n}" has met=${mat.met} (should be 0 for matte low-poly)` });
+        }
+        if (mat.r < 0.7) {
+          issues.push({ type: 'warn', msg: `Material "${mat.n}" has r=${mat.r} (should be >=0.7 for matte look)` });
+        }
+      }
+
+      // Check color luminance
+      for (const mat of schema.m) {
+        const r = ((mat.c >> 16) & 0xFF) / 255;
+        const g = ((mat.c >> 8) & 0xFF) / 255;
+        const b = (mat.c & 0xFF) / 255;
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        if (lum < 0.1) {
+          issues.push({ type: 'error', msg: `Material "${mat.n}" is too dark (lum=${lum.toFixed(2)})` });
+        }
+      }
+
+      // Check positioning - parts should be grounded
+      for (const part of schema.p) {
+        for (let idx = 0; idx < part.i.length; idx++) {
+          const inst = part.i[idx];
+          // Check if legs/feet are near ground
+          if (part.n.includes('leg') || part.n.includes('feet') || part.n.includes('foot')) {
+            // For cylinders, the bottom is at y - h/2
+            if (part.g === 'Cylinder') {
+              const bottomY = inst.p[1] - (part.geom.h || 0) / 2;
+              if (bottomY < -0.1) {
+                issues.push({ type: 'warn', msg: `${part.n}[${idx}] bottom at y=${bottomY.toFixed(2)} (below ground)` });
+              } else if (bottomY > 0.15) {
+                issues.push({ type: 'info', msg: `${part.n}[${idx}] bottom at y=${bottomY.toFixed(2)} (floating?)` });
+              }
+            }
+          }
+        }
+      }
+
+      // Check for parts with same name
+      const partNames = schema.p.map(p => p.n);
+      const dupes = partNames.filter((n, i) => partNames.indexOf(n) !== i);
+      if (dupes.length > 0) {
+        issues.push({ type: 'error', msg: `Duplicate part names: ${dupes.join(', ')}` });
+      }
+
+      // Check parent references
+      for (const part of schema.p) {
+        if (part.par && !partNames.includes(part.par)) {
+          issues.push({ type: 'error', msg: `Part "${part.n}" references unknown parent "${part.par}"` });
+        }
+      }
+
+      // Check cylinder geometry issues
+      for (const part of schema.p) {
+        if (part.g === 'Cylinder') {
+          // Cylinders are centered on their height, so position needs to account for this
+          for (let idx = 0; idx < part.i.length; idx++) {
+            const inst = part.i[idx];
+            const h = part.geom.h || 1;
+            const centerY = inst.p[1];
+            const bottomY = centerY - h/2;
+            const topY = centerY + h/2;
+
+            if (part.n.includes('leg') && bottomY > 0.1) {
+              issues.push({ type: 'info', msg: `${part.n}[${idx}]: leg floating (bottom y=${bottomY.toFixed(2)})` });
+            }
+          }
+        }
+      }
+
+      // Check arm positioning relative to torso
+      const torso = schema.p.find(p => p.n === 'torso');
+      const arms = schema.p.find(p => p.n === 'arms');
+      if (torso && arms) {
+        const torsoY = torso.i[0].p[1];
+        const torsoH = torso.geom.size ? torso.geom.size[1] : 0;
+        const shoulderY = torsoY + torsoH/2;
+
+        for (let idx = 0; idx < arms.i.length; idx++) {
+          const armY = arms.i[idx].p[1];
+          const armH = arms.geom.h || 0;
+          const armTopY = armY + armH/2;
+
+          if (Math.abs(armTopY - shoulderY) > 0.15) {
+            issues.push({ type: 'info', msg: `Arm[${idx}] top at y=${armTopY.toFixed(2)}, shoulder at y=${shoulderY.toFixed(2)}` });
+          }
+        }
+      }
+
+      return { totalMeshes, issues };
+    }
+
+    // Build Three.js group from schema
+    function buildFromSchema(THREE, schema) {
+      const group = new THREE.Group();
+
+      // Create materials
+      const mats = schema.m.map(m => new THREE.MeshStandardMaterial({
+        color: m.c,
+        roughness: m.r || 0.8,
+        metalness: m.met || 0,
+        emissive: m.e || 0x000000,
+        emissiveIntensity: m.ei || 0,
+        flatShading: m.flat !== false
+      }));
+
+      // Build parts map for parenting
+      const partMap = { null: group };
+
+      // Create geometry helper
+      function createGeometry(g, geom) {
+        switch (g) {
+          case 'Box':
+            return new THREE.BoxGeometry(
+              geom.size[0], geom.size[1], geom.size[2],
+              geom.seg?.[0] || 1, geom.seg?.[1] || 1, geom.seg?.[2] || 1
+            );
+          case 'Sphere':
+            return new THREE.SphereGeometry(
+              geom.rad || 0.5,
+              Math.min(geom.ws || 8, 10),
+              Math.min(geom.hs || 6, 8)
+            );
+          case 'Cylinder':
+            return new THREE.CylinderGeometry(
+              geom.rt || 0.5,
+              geom.rb || 0.5,
+              geom.h || 1,
+              Math.min(geom.rs || 8, 10)
+            );
+          case 'Cone':
+            return new THREE.ConeGeometry(
+              geom.r || 0.5,
+              geom.h || 1,
+              Math.min(geom.rs || 8, 10)
+            );
+          case 'Torus':
+            return new THREE.TorusGeometry(
+              geom.r || 0.5,
+              geom.t || 0.2,
+              Math.min(geom.rs || 8, 10),
+              Math.min(geom.ts || 12, 12)
+            );
+          default:
+            return new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        }
+      }
+
+      // First pass: create all part groups
+      for (const part of schema.p) {
+        const partGroup = new THREE.Group();
+        partGroup.name = part.n;
+        partMap[part.n] = partGroup;
+      }
+
+      // Second pass: parent and create meshes
+      for (const part of schema.p) {
+        const partGroup = partMap[part.n];
+        const parent = partMap[part.par] || group;
+        parent.add(partGroup);
+
+        const geometry = createGeometry(part.g, part.geom);
+        geometry.computeVertexNormals();
+        const material = mats[part.mat] || mats[0];
+
+        for (let idx = 0; idx < part.i.length; idx++) {
+          const inst = part.i[idx];
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.name = `${part.n}_${idx}`;
+
+          mesh.position.set(inst.p[0], inst.p[1], inst.p[2]);
+          if (inst.r) mesh.rotation.set(inst.r[0], inst.r[1], inst.r[2]);
+          if (inst.s) mesh.scale.set(inst.s[0], inst.s[1], inst.s[2]);
+
+          partGroup.add(mesh);
+        }
+      }
+
+      // Normalize (center XZ, ground Y=0, scale to max 2.0)
+      const box = new THREE.Box3().setFromObject(group);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+
+      group.position.x = -center.x;
+      group.position.z = -center.z;
+      group.position.y = -box.min.y;
+
+      const maxDim = Math.max(size.x, size.y, size.z);
+      if (maxDim > 2.0) {
+        const scale = 2.0 / maxDim;
+        group.scale.setScalar(scale);
+      }
+
+      if (schema.floatY > 0) {
+        group.position.y += schema.floatY;
+      }
+
+      return group;
+    }
+
+    // PARTS_EDITOR_PIPELINE settings (from src/shared/renderPipeline.js)
+    const PARTS_EDITOR_PIPELINE = {
+      toneMapping: THREE.ACESFilmicToneMapping,
+      toneMappingExposure: 0.75,
+      outputColorSpace: THREE.SRGBColorSpace,
+      lights: {
+        ambient: { color: 0xffffff, intensity: 0.35 },
+        key: { color: 0xffffff, intensity: 0.7, position: [5, 10, 7] },
+        fill: { color: 0x8888ff, intensity: 0.25, position: [-5, 3, -5] }
+      }
+    };
+
+    // Create a viewer for each example
+    function createViewer(container, example) {
+      const canvas = document.createElement('canvas');
+      container.appendChild(canvas);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap at 2 like Part Editor
+      renderer.outputColorSpace = PARTS_EDITOR_PIPELINE.outputColorSpace;
+      renderer.toneMapping = PARTS_EDITOR_PIPELINE.toneMapping;
+      renderer.toneMappingExposure = PARTS_EDITOR_PIPELINE.toneMappingExposure;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.setClearColor(0x1a1a2e);
+
+      const scene = new THREE.Scene();
+
+      // Lights (matching PARTS_EDITOR_PIPELINE exactly)
+      const ambient = new THREE.AmbientLight(
+        PARTS_EDITOR_PIPELINE.lights.ambient.color,
+        PARTS_EDITOR_PIPELINE.lights.ambient.intensity
+      );
+      scene.add(ambient);
+
+      const key = new THREE.DirectionalLight(
+        PARTS_EDITOR_PIPELINE.lights.key.color,
+        PARTS_EDITOR_PIPELINE.lights.key.intensity
+      );
+      key.position.set(...PARTS_EDITOR_PIPELINE.lights.key.position);
+      key.castShadow = true;
+      key.shadow.mapSize.width = 1024;
+      key.shadow.mapSize.height = 1024;
+      scene.add(key);
+
+      const fill = new THREE.DirectionalLight(
+        PARTS_EDITOR_PIPELINE.lights.fill.color,
+        PARTS_EDITOR_PIPELINE.lights.fill.intensity
+      );
+      fill.position.set(...PARTS_EDITOR_PIPELINE.lights.fill.position);
+      scene.add(fill);
+
+      // Ground plane (receives shadows, like Part Editor)
+      const groundGeo = new THREE.PlaneGeometry(20, 20);
+      const groundMat = new THREE.MeshStandardMaterial({ color: 0x222233 });
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2;
+      ground.receiveShadow = true;
+      ground.name = '__ground__';
+      scene.add(ground);
+
+      // Ground grid (matching Part Editor colors)
+      const grid = new THREE.GridHelper(20, 20, 0x444466, 0x333344);
+      grid.position.y = 0.01; // Slightly above ground to prevent z-fighting
+      scene.add(grid);
+
+      // Axes helper
+      const axes = new THREE.AxesHelper(1);
+      scene.add(axes);
+
+      // Camera (matching Part Editor: FOV 50, position (3, 2.5, 4), target (0, 1, 0))
+      const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+      camera.position.set(3, 2.5, 4);
+
+      // Controls (matching Part Editor damping)
+      const controls = new OrbitControls(camera, canvas);
+      controls.target.set(0, 1, 0);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.1;
+
+      // Build model
+      const model = buildFromSchema(THREE, example.schema);
+      // Enable shadows on all meshes (like Part Editor)
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      scene.add(model);
+
+      // Resize handler
+      function resize() {
+        const rect = container.getBoundingClientRect();
+        renderer.setSize(rect.width, rect.height, false);
+        camera.aspect = rect.width / rect.height;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+
+      const resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(container);
+
+      // Animation loop
+      let animating = true;
+      function animate() {
+        if (!animating) return;
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // Wireframe toggle
+      let wireframe = false;
+      container.toggleWireframe = () => {
+        wireframe = !wireframe;
+        model.traverse(obj => {
+          if (obj.isMesh) {
+            obj.material.wireframe = wireframe;
+          }
+        });
+      };
+
+      // Cleanup
+      return () => {
+        animating = false;
+        resizeObserver.disconnect();
+        renderer.dispose();
+      };
+    }
+
+    // Build UI
+    const grid = document.getElementById('grid');
+
+    for (const example of EXAMPLES) {
+      const analysis = analyzeSchema(example.schema);
+
+      const card = document.createElement('div');
+      card.className = 'model-card';
+
+      // Header
+      const header = document.createElement('div');
+      header.className = 'model-header';
+      header.innerHTML = `
+        <span class="model-title">${example.name}</span>
+        <div class="model-stats">
+          <span class="stat">${analysis.totalMeshes} meshes</span>
+          <span class="stat">${example.schema.m.length} mats</span>
+          <span class="stat">${example.schema.p.length} parts</span>
+          ${analysis.issues.filter(i => i.type === 'error').length > 0 ?
+            `<span class="stat error">${analysis.issues.filter(i => i.type === 'error').length} errors</span>` : ''}
+          ${analysis.issues.filter(i => i.type === 'warn').length > 0 ?
+            `<span class="stat warning">${analysis.issues.filter(i => i.type === 'warn').length} warnings</span>` : ''}
+        </div>
+      `;
+      card.appendChild(header);
+
+      // Canvas container
+      const canvasContainer = document.createElement('div');
+      canvasContainer.className = 'canvas-container';
+      card.appendChild(canvasContainer);
+
+      // Controls
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+      controls.innerHTML = `
+        <button class="control-btn" onclick="this.parentElement.parentElement.toggleWireframe()">Wireframe</button>
+      `;
+      canvasContainer.appendChild(controls);
+
+      // Issues
+      if (analysis.issues.length > 0) {
+        const issuesDiv = document.createElement('div');
+        issuesDiv.className = 'issues';
+        for (const issue of analysis.issues) {
+          const issueEl = document.createElement('div');
+          issueEl.className = 'issue';
+          const icon = issue.type === 'error' ? '❌' : issue.type === 'warn' ? '⚠️' : 'ℹ️';
+          const cls = issue.type === 'error' ? 'issue-error' : issue.type === 'warn' ? 'issue-warn' : 'issue-info';
+          issueEl.innerHTML = `<span class="issue-icon">${icon}</span><span class="${cls}">${issue.msg}</span>`;
+          issuesDiv.appendChild(issueEl);
+        }
+        card.appendChild(issuesDiv);
+      }
+
+      // JSON toggle
+      const jsonToggle = document.createElement('button');
+      jsonToggle.className = 'json-toggle';
+      jsonToggle.textContent = `▶ View JSON (${example.description})`;
+      card.appendChild(jsonToggle);
+
+      const jsonContent = document.createElement('div');
+      jsonContent.className = 'json-content';
+      jsonContent.textContent = JSON.stringify(example.schema, null, 2);
+      card.appendChild(jsonContent);
+
+      jsonToggle.onclick = () => {
+        jsonContent.classList.toggle('open');
+        jsonToggle.textContent = jsonContent.classList.contains('open')
+          ? `▼ Hide JSON (${example.description})`
+          : `▶ View JSON (${example.description})`;
+      };
+
+      grid.appendChild(card);
+
+      // Create viewer
+      const cleanup = createViewer(canvasContainer, example);
+    }
+  </script>
+</body>
+</html>

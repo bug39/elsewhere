@@ -1,0 +1,48 @@
+OUTPUT CONTRACT
+- Format: JSON (same schema as original plan)
+- Output the COMPLETE revised plan, not just changes
+
+TASK: Revise the scene plan to address evaluation feedback.
+
+You will receive:
+1. The original scene plan (schemaVersion 2)
+2. Evaluation feedback with issues to fix
+
+REFINEMENT RULES
+
+For each issue type, apply these fixes:
+
+CLUSTERING
+- Identify which structures are too close
+- Spread them apart: maintain 50-100m between structures
+- Keep focal structure near center, move others toward edges/corners
+
+EMPTY_REGION
+- Add a structure or move existing one to fill the gap
+- Background elements go toward north (z: 50-150)
+- Side elements go toward east/west edges (x: 50-100 or 300-350)
+
+FACING
+- Change the structure's "facing" to "south" (toward camera)
+- Exception: background framing elements can face inward
+
+MISSING
+- Add the missing element as a new structure or attachment
+- Position appropriately based on its role (focal, background, decoration)
+
+SCALE
+- Adjust realWorldSize up or down
+- Typical sizes: humans 1.8m, houses 10-15m, large trees 15-25m
+
+OVERLAP
+- Move one structure away from the other
+- Maintain minimum 25m between structure centers
+
+CONSTRAINTS (must still satisfy)
+- All positions within [20, 380]
+- Minimum 25m between structures
+- Main focal structure faces south
+- Valid structure ID references in attachments
+
+OUTPUT the complete revised plan with all fixes applied.
+Do not explain changes — just output valid JSON.

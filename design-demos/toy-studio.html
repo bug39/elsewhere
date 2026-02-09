@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Studio floor demo - thinq</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/toy-studio.css">
+  </head>
+  <body class="theme-toy">
+    <div class="app">
+      <header class="app-header">
+        <div class="brand">
+          <div class="brand-mark">FLR</div>
+          <div>
+            <div class="brand-name">thinq studio floor</div>
+            <span class="brand-sub">Builder layout</span>
+            <span class="world-meta">World: Candy Harbor | Autosave 18s</span>
+          </div>
+        </div>
+
+        <div class="stepper">
+          <div class="step active">Generate</div>
+          <div class="step">Stage</div>
+          <div class="step">Story</div>
+          <div class="step">Play</div>
+        </div>
+
+        <div class="header-actions">
+          <div class="mode-switch">
+            <button class="mode-btn active">Edit</button>
+            <button class="mode-btn">Play</button>
+          </div>
+          <button class="btn ghost">Save</button>
+          <button class="btn primary">Launch</button>
+        </div>
+      </header>
+
+      <div class="app-body">
+        <aside class="panel fade-in">
+          <div class="panel-header">
+            Toy Shelf
+            <span>26</span>
+          </div>
+          <div class="panel-section">
+            <div class="search">
+              Find assets
+              <input type="text" placeholder="Rocket, castle, cat...">
+            </div>
+            <div class="chips">
+              <span class="chip active">All</span>
+              <span class="chip">Friends</span>
+              <span class="chip">Props</span>
+              <span class="chip">Nature</span>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="asset-grid">
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Cloud bus</strong>
+                <div class="asset-meta"><span>Vehicle</span><span>XL</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Sun castle</strong>
+                <div class="asset-meta"><span>Building</span><span>L</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Plush bear</strong>
+                <div class="asset-meta"><span>Friend</span><span>M</span></div>
+              </div>
+              <div class="asset-card">
+                <div class="asset-thumb"></div>
+                <strong>Lantern tree</strong>
+                <div class="asset-meta"><span>Nature</span><span>M</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="callout">
+              <strong>First session</strong>
+              Generate one hero asset, then place it to unlock the story tools.
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button class="btn primary">Generate toy</button>
+            <button class="btn">Queue 1</button>
+          </div>
+        </aside>
+
+        <section class="viewport-panel fade-in delay-1">
+          <div class="viewport-topbar">
+            <span>Tool: Place | Grid 2m | Snap on</span>
+            <span class="status-pill">Build mode</span>
+          </div>
+          <div class="viewport">
+            <div class="viewport-hud">
+              <div class="tool-stack">
+                <div class="tool-btn"><span class="tool-key">V</span><span>Pick</span></div>
+                <div class="tool-btn"><span class="tool-key">P</span><span>Place</span></div>
+                <div class="tool-btn"><span class="tool-key">B</span><span>Paint</span></div>
+                <div class="tool-btn"><span class="tool-key">X</span><span>Erase</span></div>
+              </div>
+              <div class="viewport-hint">Drag toys onto the stage. Scroll to scale.</div>
+            </div>
+          </div>
+          <div class="viewport-footer">
+            <span>Selected: Plush bear | Transform: Rotate</span>
+            <span>Shortcuts: V P B X, G R S</span>
+          </div>
+        </section>
+
+        <aside class="panel fade-in delay-2">
+          <div class="panel-header">Character info</div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Selection</div>
+              <div class="list">
+                <div class="list-item"><span>Name</span><span>Plush bear</span></div>
+                <div class="list-item"><span>Behavior</span><span>Wander</span></div>
+                <div class="list-item"><span>Dialogue</span><span>Ready</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Transform</div>
+              <div class="input-row">
+                <input class="input" value="X 12">
+                <input class="input" value="Y 0">
+              </div>
+              <div class="input-row">
+                <input class="input" value="Z 9">
+                <input class="input" value="Rot 90">
+              </div>
+              <div class="input-row">
+                <input class="input" value="Scale 0.9">
+                <input class="input" value="Radius 12">
+              </div>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="field-group">
+              <div class="field-label">Quick cues</div>
+              <div class="list">
+                <div class="list-item"><span>Story node</span><span>3 lines</span></div>
+                <div class="list-item"><span>Idle loop</span><span>Enabled</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button class="btn">Edit parts</button>
+            <button class="btn primary">Edit story</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

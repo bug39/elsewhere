@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part Selection Editor Prototype</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background: #16213e;
+      padding: 12px 20px;
+      border-bottom: 1px solid #0f3460;
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 500;
+      color: #e94560;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .left-panel {
+      width: 300px;
+      background: #16213e;
+      border-right: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .panel-section {
+      padding: 16px;
+      border-bottom: 1px solid #0f3460;
+    }
+
+    .panel-section h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+
+    select, textarea, input, button {
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      color: #e0e0e0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #e94560;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      color: #e0e0e0;
+      border-radius: 4px;
+      resize: vertical;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 11px;
+      margin-top: 8px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #e94560;
+    }
+
+    .parts-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .part-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-bottom: 2px;
+      transition: background 0.15s;
+    }
+
+    .part-item:hover {
+      background: #1a1a2e;
+    }
+
+    .part-item.selected {
+      background: #e94560;
+      color: white;
+    }
+
+    .part-item .radio {
+      width: 12px;
+      height: 12px;
+      border: 2px solid #888;
+      border-radius: 50%;
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .part-item.selected .radio {
+      border-color: white;
+    }
+
+    .part-item.selected .radio::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+    }
+
+    .mode-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 8px;
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      color: #e0e0e0;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .mode-btn:hover {
+      background: #0f3460;
+    }
+
+    .mode-btn.active {
+      background: #e94560;
+      border-color: #e94560;
+      color: white;
+    }
+
+    .transform-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .transform-row label {
+      width: 40px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .transform-row .inputs {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .transform-row input {
+      flex: 1;
+      padding: 6px 8px;
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      color: #e0e0e0;
+      border-radius: 4px;
+      width: 60px;
+      text-align: center;
+    }
+
+    .transform-row input:focus {
+      outline: none;
+      border-color: #e94560;
+    }
+
+    .transform-row input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 10px;
+      background: #0f3460;
+      border: none;
+      color: #e0e0e0;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 8px;
+    }
+
+    .action-btn:hover {
+      background: #1a4a8a;
+    }
+
+    .action-btn.primary {
+      background: #e94560;
+    }
+
+    .action-btn.primary:hover {
+      background: #ff6b8a;
+    }
+
+    .export-preview {
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      background: #1a1a2e;
+      border: 1px solid #0f3460;
+      color: #888;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 10px;
+      resize: none;
+      overflow: auto;
+    }
+
+    .viewport-container {
+      flex: 1;
+      position: relative;
+      background: #0a0a14;
+    }
+
+    #viewport {
+      width: 100%;
+      height: 100%;
+    }
+
+    .viewport-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #888;
+      pointer-events: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #16213e;
+      border: 1px solid #0f3460;
+      padding: 12px 20px;
+      border-radius: 4px;
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.success {
+      border-color: #4caf50;
+      color: #4caf50;
+    }
+
+    .no-parts {
+      color: #666;
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    .load-btn {
+      margin-top: 8px;
+    }
+
+    .part-type {
+      font-size: 10px;
+      margin-right: 6px;
+      opacity: 0.7;
+    }
+
+    .part-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .part-name.custom-named {
+      color: #4caf50;
+      font-weight: 500;
+    }
+
+    .rename-btn {
+      background: transparent;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      padding: 2px 6px;
+      font-size: 12px;
+      border-radius: 3px;
+      margin-left: 4px;
+    }
+
+    .rename-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .part-item.selected .rename-btn {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .part-item.selected .rename-btn:hover {
+      color: #fff;
+    }
+
+    .part-item.anim-part {
+      border-left: 2px solid #ff9800;
+    }
+
+    .part-item.anim-part .part-type {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Part Selection Editor Prototype</h1>
+    </header>
+    <div class="main">
+      <div class="left-panel">
+        <div class="panel-section">
+          <h3>Asset Source</h3>
+          <select id="preset-select">
+            <option value="">-- Select Preset --</option>
+            <option value="character">Simple Character (named)</option>
+            <option value="robot">Robot (named)</option>
+            <option value="tree">Tree (named)</option>
+            <option value="messy">Messy AI Output (unnamed)</option>
+            <option value="dragon">Dragon (real AI output)</option>
+            <option value="custom">Custom Code</option>
+          </select>
+          <textarea id="code-input" placeholder="Paste asset code here..." style="display: none;"></textarea>
+          <button id="load-btn" class="action-btn primary load-btn">Load Asset</button>
+        </div>
+
+        <div class="panel-section">
+          <h3>Parts</h3>
+          <div id="parts-list" class="parts-list">
+            <div class="no-parts">No asset loaded</div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>Transform</h3>
+          <div class="mode-buttons">
+            <button class="mode-btn active" data-mode="translate">T</button>
+            <button class="mode-btn" data-mode="rotate">R</button>
+            <button class="mode-btn" data-mode="scale">S</button>
+          </div>
+          <div class="transform-row">
+            <label>Pos</label>
+            <div class="inputs">
+              <input type="number" id="pos-x" step="0.1" disabled>
+              <input type="number" id="pos-y" step="0.1" disabled>
+              <input type="number" id="pos-z" step="0.1" disabled>
+            </div>
+          </div>
+          <div class="transform-row">
+            <label>Rot</label>
+            <div class="inputs">
+              <input type="number" id="rot-x" step="5" disabled>
+              <input type="number" id="rot-y" step="5" disabled>
+              <input type="number" id="rot-z" step="5" disabled>
+            </div>
+          </div>
+          <div class="transform-row">
+            <label>Scl</label>
+            <div class="inputs">
+              <input type="number" id="scl-x" step="0.1" disabled>
+              <input type="number" id="scl-y" step="0.1" disabled>
+              <input type="number" id="scl-z" step="0.1" disabled>
+            </div>
+          </div>
+          <button id="reset-part-btn" class="action-btn" disabled>Reset Part</button>
+          <button id="reset-all-btn" class="action-btn">Reset All</button>
+        </div>
+
+        <div class="panel-section">
+          <h3>Export</h3>
+          <button id="copy-btn" class="action-btn primary">Copy Tweaks JSON</button>
+          <textarea id="export-preview" class="export-preview" readonly>[]</textarea>
+        </div>
+      </div>
+
+      <div class="viewport-container">
+        <canvas id="viewport"></canvas>
+        <div class="viewport-hint">Click on parts to select • Drag gizmo to transform</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { TransformControls } from 'three/addons/controls/TransformControls.js';
+
+    // ============================================================
+    // Sample Assets
+    // ============================================================
+
+    const SAMPLE_ASSETS = {
+      character: `export function createAsset(THREE) {
+  const group = new THREE.Group();
+
+  // Body
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(0.8, 1.2, 0.5),
+    new THREE.MeshStandardMaterial({ color: 0x4488ff })
+  );
+  body.name = 'body';
+  body.position.y = 0.6;
+
+  // Head
+  const head = new THREE.Mesh(
+    new THREE.SphereGeometry(0.3, 16, 16),
+    new THREE.MeshStandardMaterial({ color: 0xffcc88 })
+  );
+  head.name = 'head';
+  head.position.y = 1.5;
+
+  // Hat
+  const hat = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.15, 0.35, 0.25, 16),
+    new THREE.MeshStandardMaterial({ color: 0x222222 })
+  );
+  hat.name = 'hat';
+  hat.position.y = 1.85;
+
+  // Left Arm
+  const armLeft = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, 0.8, 0.2),
+    new THREE.MeshStandardMaterial({ color: 0x4488ff })
+  );
+  armLeft.name = 'arm_left';
+  armLeft.position.set(-0.55, 0.6, 0);
+
+  // Right Arm
+  const armRight = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, 0.8, 0.2),
+    new THREE.MeshStandardMaterial({ color: 0x4488ff })
+  );
+  armRight.name = 'arm_right';
+  armRight.position.set(0.55, 0.6, 0);
+
+  group.add(body, head, hat, armLeft, armRight);
+  return group;
+}`,
+
+      robot: `export function createAsset(THREE) {
+  const group = new THREE.Group();
+  const metalMat = new THREE.MeshStandardMaterial({ color: 0x888899, metalness: 0.8, roughness: 0.3 });
+  const accentMat = new THREE.MeshStandardMaterial({ color: 0xff4444, emissive: 0x441111 });
+
+  // Torso
+  const torso = new THREE.Mesh(
+    new THREE.BoxGeometry(0.9, 1.0, 0.6),
+    metalMat
+  );
+  torso.name = 'torso';
+  torso.position.y = 0.8;
+
+  // Head
+  const head = new THREE.Mesh(
+    new THREE.BoxGeometry(0.5, 0.4, 0.5),
+    metalMat
+  );
+  head.name = 'head';
+  head.position.y = 1.55;
+
+  // Visor
+  const visor = new THREE.Mesh(
+    new THREE.BoxGeometry(0.45, 0.15, 0.1),
+    accentMat
+  );
+  visor.name = 'visor';
+  visor.position.set(0, 1.55, 0.25);
+
+  // Antenna
+  const antenna = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.02, 0.02, 0.3, 8),
+    metalMat
+  );
+  antenna.name = 'antenna';
+  antenna.position.set(0, 1.9, 0);
+
+  // Left Arm
+  const armL = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.1, 0.08, 0.7, 8),
+    metalMat
+  );
+  armL.name = 'arm_left';
+  armL.position.set(-0.6, 0.8, 0);
+
+  // Right Arm
+  const armR = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.1, 0.08, 0.7, 8),
+    metalMat
+  );
+  armR.name = 'arm_right';
+  armR.position.set(0.6, 0.8, 0);
+
+  // Legs base
+  const legs = new THREE.Mesh(
+    new THREE.BoxGeometry(0.6, 0.3, 0.4),
+    metalMat
+  );
+  legs.name = 'legs';
+  legs.position.y = 0.15;
+
+  group.add(torso, head, visor, antenna, armL, armR, legs);
+  return group;
+}`,
+
+      tree: `export function createAsset(THREE) {
+  const group = new THREE.Group();
+
+  // Trunk
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.15, 0.2, 1.2, 8),
+    new THREE.MeshStandardMaterial({ color: 0x8B4513 })
+  );
+  trunk.name = 'trunk';
+  trunk.position.y = 0.6;
+
+  // Lower foliage
+  const foliageLower = new THREE.Mesh(
+    new THREE.ConeGeometry(0.8, 0.8, 8),
+    new THREE.MeshStandardMaterial({ color: 0x228B22 })
+  );
+  foliageLower.name = 'foliage_lower';
+  foliageLower.position.y = 1.4;
+
+  // Middle foliage
+  const foliageMid = new THREE.Mesh(
+    new THREE.ConeGeometry(0.6, 0.7, 8),
+    new THREE.MeshStandardMaterial({ color: 0x2E8B2E })
+  );
+  foliageMid.name = 'foliage_mid';
+  foliageMid.position.y = 1.9;
+
+  // Top foliage
+  const foliageTop = new THREE.Mesh(
+    new THREE.ConeGeometry(0.4, 0.6, 8),
+    new THREE.MeshStandardMaterial({ color: 0x32CD32 })
+  );
+  foliageTop.name = 'foliage_top';
+  foliageTop.position.y = 2.35;
+
+  group.add(trunk, foliageLower, foliageMid, foliageTop);
+  return group;
+}`,
+
+      messy: `export function createAsset(THREE) {
+  // Simulates messy AI-generated output:
+  // - No names on most meshes
+  // - Deeply nested groups
+  // - Some named groups that should be selectable
+  const group = new THREE.Group();
+
+  // Body group (named - should be selectable as unit)
+  const bodyGroup = new THREE.Group();
+  bodyGroup.name = 'body';
+  bodyGroup.position.y = 0.6;
+
+  // Torso (unnamed mesh inside body group)
+  const torso = new THREE.Mesh(
+    new THREE.BoxGeometry(0.8, 1.0, 0.5),
+    new THREE.MeshStandardMaterial({ color: 0x4488ff })
+  );
+  // No name!
+
+  // Some random detail meshes (unnamed)
+  const detail1 = new THREE.Mesh(
+    new THREE.BoxGeometry(0.1, 0.1, 0.1),
+    new THREE.MeshStandardMaterial({ color: 0x2266dd })
+  );
+  detail1.position.set(0.25, 0.3, 0.26);
+
+  const detail2 = new THREE.Mesh(
+    new THREE.BoxGeometry(0.1, 0.1, 0.1),
+    new THREE.MeshStandardMaterial({ color: 0x2266dd })
+  );
+  detail2.position.set(-0.25, 0.3, 0.26);
+
+  bodyGroup.add(torso, detail1, detail2);
+
+  // Head group (named)
+  const headGroup = new THREE.Group();
+  headGroup.name = 'head';
+  headGroup.position.y = 1.5;
+
+  // Skull (unnamed)
+  const skull = new THREE.Mesh(
+    new THREE.SphereGeometry(0.3, 12, 12),
+    new THREE.MeshStandardMaterial({ color: 0xffcc88 })
+  );
+
+  // Eyes (unnamed, nested in another unnamed group)
+  const eyesGroup = new THREE.Group();
+  const eyeL = new THREE.Mesh(
+    new THREE.SphereGeometry(0.05, 8, 8),
+    new THREE.MeshStandardMaterial({ color: 0x222222 })
+  );
+  eyeL.position.set(-0.1, 0.05, 0.25);
+  const eyeR = new THREE.Mesh(
+    new THREE.SphereGeometry(0.05, 8, 8),
+    new THREE.MeshStandardMaterial({ color: 0x222222 })
+  );
+  eyeR.position.set(0.1, 0.05, 0.25);
+  eyesGroup.add(eyeL, eyeR);
+
+  headGroup.add(skull, eyesGroup);
+
+  // Arms - named groups containing unnamed meshes
+  const armL = new THREE.Group();
+  armL.name = 'arm_left';
+  armL.position.set(-0.55, 0.6, 0);
+  const armLMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, 0.8, 0.2),
+    new THREE.MeshStandardMaterial({ color: 0x4488ff })
+  );
+  armL.add(armLMesh);
+
+  const armR = new THREE.Group();
+  armR.name = 'arm_right';
+  armR.position.set(0.55, 0.6, 0);
+  const armRMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, 0.8, 0.2),
+    new THREE.MeshStandardMaterial({ color: 0x4488ff })
+  );
+  armR.add(armRMesh);
+
+  // Hat - deeply nested, named
+  const accessories = new THREE.Group();
+  const hatGroup = new THREE.Group();
+  hatGroup.name = 'hat';
+  hatGroup.position.y = 1.85;
+  const hatMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.15, 0.35, 0.25, 16),
+    new THREE.MeshStandardMaterial({ color: 0x222222 })
+  );
+  hatGroup.add(hatMesh);
+  accessories.add(hatGroup);
+
+  group.add(bodyGroup, headGroup, armL, armR, accessories);
+  return group;
+}`,
+
+      dragon: `export function createAsset(THREE) {
+  const group = new THREE.Group();
+
+  // Materials
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x447722, roughness: 0.8, flatShading: true });
+  const bellyMat = new THREE.MeshStandardMaterial({ color: 0xddcc99, roughness: 0.9, flatShading: true });
+  const hornMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.7, flatShading: true });
+  const eyeMat = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xff0000, flatShading: true });
+
+  // Torso
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.3, 1.2, 8), bodyMat);
+  torso.rotation.x = Math.PI / 2;
+  torso.name = "torso";
+  group.add(torso);
+
+  // Belly plate
+  const belly = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.25, 1.1, 8, 1, false, 0, Math.PI), bellyMat);
+  belly.rotation.x = Math.PI / 2;
+  belly.rotation.y = Math.PI;
+  belly.position.y = -0.05;
+  group.add(belly);
+
+  // Neck
+  const neckPivot = new THREE.Group();
+  neckPivot.position.set(0, 0.2, 0.5);
+  group.add(neckPivot);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.25, 0.6, 6), bodyMat);
+  neck.position.y = 0.2;
+  neck.rotation.x = -Math.PI / 4;
+  neckPivot.add(neck);
+
+  // Head
+  const headGroup = new THREE.Group();
+  headGroup.position.set(0, 0.5, 0.3);
+  neckPivot.add(headGroup);
+
+  const cranium = new THREE.Mesh(new THREE.SphereGeometry(0.25, 8, 6), bodyMat);
+  headGroup.add(cranium);
+
+  const snout = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.2, 0.4), bodyMat);
+  snout.position.z = 0.25;
+  snout.position.y = -0.05;
+  headGroup.add(snout);
+
+  // Eyes
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 4), eyeMat);
+  eyeL.position.set(0.15, 0.1, 0.15);
+  headGroup.add(eyeL);
+  const eyeR = eyeL.clone();
+  eyeR.position.x = -0.15;
+  headGroup.add(eyeR);
+
+  // Horns
+  const hornL = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.3, 6), hornMat);
+  hornL.position.set(0.12, 0.25, -0.05);
+  hornL.rotation.x = -Math.PI / 4;
+  headGroup.add(hornL);
+  const hornR = hornL.clone();
+  hornR.position.x = -0.12;
+  headGroup.add(hornR);
+
+  // Tail
+  const tailPivot = new THREE.Group();
+  tailPivot.position.set(0, 0, -0.6);
+  group.add(tailPivot);
+  const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.02, 1.2, 6), bodyMat);
+  tail.position.z = -0.5;
+  tail.rotation.x = -Math.PI / 2;
+  tailPivot.add(tail);
+
+  // Wings
+  const createWing = (side) => {
+    const wingPivot = new THREE.Group();
+    wingPivot.position.set(side * 0.3, 0.3, 0);
+
+    const wingArm = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.03, 1.2, 4), bodyMat);
+    wingArm.rotation.z = side * Math.PI / 2;
+    wingArm.position.x = side * 0.6;
+    wingPivot.add(wingArm);
+
+    const wingMembrane = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.02, 0.7), bodyMat);
+    wingMembrane.position.set(side * 0.6, 0, -0.3);
+    wingPivot.add(wingMembrane);
+
+    return wingPivot;
+  };
+
+  const wingL = createWing(1);
+  const wingR = createWing(-1);
+  group.add(wingL, wingR);
+
+  // Legs
+  const legGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.5, 6);
+  const createLeg = (x, z) => {
+    const leg = new THREE.Mesh(legGeo, bodyMat);
+    leg.position.set(x, -0.4, z);
+    return leg;
+  };
+  group.add(createLeg(0.3, 0.4));
+  group.add(createLeg(-0.3, 0.4));
+  group.add(createLeg(0.3, -0.4));
+  group.add(createLeg(-0.3, -0.4));
+
+  // Spikes
+  const spikeGeo = new THREE.ConeGeometry(0.08, 0.2, 4);
+  for (let i = 0; i < 4; i++) {
+    const spike = new THREE.Mesh(spikeGeo, hornMat);
+    spike.position.set(0, 0.4, 0.4 - i * 0.3);
+    group.add(spike);
+  }
+
+  // Animation Data
+  group.userData.parts = { wingL, wingR, tailPivot, neckPivot, headGroup };
+  group.userData.time = 0;
+  group.userData.animate = (dt) => {
+    group.userData.time += dt;
+    const t = group.userData.time;
+    group.userData.parts.wingL.rotation.z = Math.sin(t * 4) * 0.6 + 0.4;
+    group.userData.parts.wingR.rotation.z = -Math.sin(t * 4) * 0.6 - 0.4;
+    group.userData.parts.tailPivot.rotation.y = Math.sin(t * 2) * 0.3;
+    group.userData.parts.neckPivot.rotation.z = Math.sin(t * 1.5) * 0.1;
+    group.userData.parts.headGroup.rotation.x = Math.sin(t * 2) * 0.1;
+  };
+
+  // Finalization
+  const box = new THREE.Box3().setFromObject(group);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  group.position.x -= center.x;
+  group.position.z -= center.z;
+  box.setFromObject(group);
+  group.position.y -= box.min.y;
+  const scale = 2.0 / Math.max(size.x, size.y, size.z);
+  group.scale.setScalar(scale);
+  box.setFromObject(group);
+  group.position.y -= box.min.y;
+
+  return group;
+}`
+    };
+
+    // ============================================================
+    // State
+    // ============================================================
+
+    let scene, camera, renderer, orbitControls, transformControls;
+    let currentAsset = null;
+    let parts = [];  // Array of { object, depth, type, displayName }
+    let selectedPart = null;
+    let highlightedMeshes = [];  // Track exactly which meshes we highlighted
+    let originalTransforms = new Map();
+    let customNames = new Map();  // uuid -> user-assigned name
+    let transformMode = 'translate';
+
+    // ============================================================
+    // DOM Elements
+    // ============================================================
+
+    const presetSelect = document.getElementById('preset-select');
+    const codeInput = document.getElementById('code-input');
+    const loadBtn = document.getElementById('load-btn');
+    const partsList = document.getElementById('parts-list');
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    const posInputs = { x: document.getElementById('pos-x'), y: document.getElementById('pos-y'), z: document.getElementById('pos-z') };
+    const rotInputs = { x: document.getElementById('rot-x'), y: document.getElementById('rot-y'), z: document.getElementById('rot-z') };
+    const sclInputs = { x: document.getElementById('scl-x'), y: document.getElementById('scl-y'), z: document.getElementById('scl-z') };
+    const resetPartBtn = document.getElementById('reset-part-btn');
+    const resetAllBtn = document.getElementById('reset-all-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const exportPreview = document.getElementById('export-preview');
+    const viewport = document.getElementById('viewport');
+    const toast = document.getElementById('toast');
+
+    // ============================================================
+    // Three.js Setup
+    // ============================================================
+
+    function initScene() {
+      // Scene
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a0a14);
+
+      // Camera
+      camera = new THREE.PerspectiveCamera(50, viewport.clientWidth / viewport.clientHeight, 0.1, 100);
+      camera.position.set(3, 2.5, 4);
+
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ canvas: viewport, antialias: true });
+      renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      // Lighting
+      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+      scene.add(ambient);
+
+      const directional = new THREE.DirectionalLight(0xffffff, 0.8);
+      directional.position.set(5, 10, 7);
+      directional.castShadow = true;
+      directional.shadow.mapSize.width = 1024;
+      directional.shadow.mapSize.height = 1024;
+      scene.add(directional);
+
+      const fill = new THREE.DirectionalLight(0x8888ff, 0.3);
+      fill.position.set(-5, 3, -5);
+      scene.add(fill);
+
+      // Ground plane
+      const groundGeo = new THREE.PlaneGeometry(20, 20);
+      const groundMat = new THREE.MeshStandardMaterial({ color: 0x222233 });
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2;
+      ground.receiveShadow = true;
+      ground.name = '__ground__';
+      scene.add(ground);
+
+      // Grid helper
+      const grid = new THREE.GridHelper(20, 20, 0x444466, 0x333344);
+      grid.name = '__grid__';
+      scene.add(grid);
+
+      // Orbit controls
+      orbitControls = new OrbitControls(camera, renderer.domElement);
+      orbitControls.enableDamping = true;
+      orbitControls.dampingFactor = 0.1;
+      orbitControls.target.set(0, 1, 0);
+
+      // Transform controls
+      transformControls = new TransformControls(camera, renderer.domElement);
+      transformControls.addEventListener('dragging-changed', (event) => {
+        orbitControls.enabled = !event.value;
+      });
+      transformControls.addEventListener('objectChange', onTransformChange);
+      scene.add(transformControls);
+
+      // Handle resize
+      window.addEventListener('resize', onResize);
+
+      // Click handler for part selection
+      viewport.addEventListener('click', onViewportClick);
+
+      // Start animation loop
+      animate();
+    }
+
+    function onResize() {
+      camera.aspect = viewport.clientWidth / viewport.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      orbitControls.update();
+      renderer.render(scene, camera);
+    }
+
+    // ============================================================
+    // Asset Loading
+    // ============================================================
+
+    async function loadAsset(code) {
+      // Clear previous asset
+      if (currentAsset) {
+        transformControls.detach();
+        scene.remove(currentAsset);
+        currentAsset = null;
+      }
+      parts = [];
+      selectedPart = null;
+      originalTransforms.clear();
+      customNames.clear();
+
+      try {
+        // Create blob URL and import
+        const blob = new Blob([code], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        const module = await import(url);
+        URL.revokeObjectURL(url);
+
+        if (typeof module.createAsset !== 'function') {
+          throw new Error('Module must export createAsset function');
+        }
+
+        // Create the asset
+        currentAsset = module.createAsset(THREE);
+        scene.add(currentAsset);
+
+        // Collect selectable parts:
+        // Strategy:
+        // 1. Check userData.parts (AI animation system uses this for semantic groups)
+        // 2. Find named Groups/Meshes
+        // 3. Add orphan meshes not covered by above
+        const selectableObjects = new Set();
+        const coveredMeshes = new Set();
+
+        // First: check userData.parts (common AI pattern for animation rigs)
+        if (currentAsset.userData?.parts) {
+          const animParts = currentAsset.userData.parts;
+          for (const [key, obj] of Object.entries(animParts)) {
+            if (obj && obj.isObject3D) {
+              // Give it a name based on the key if unnamed
+              if (!obj.name) obj.name = key;
+              selectableObjects.add(obj);
+              // Mark all descendant meshes as covered
+              obj.traverse((child) => {
+                if (child.isMesh) coveredMeshes.add(child);
+              });
+            }
+          }
+        }
+
+        // Second: find named groups and meshes
+        currentAsset.traverse((obj) => {
+          if (obj === currentAsset) return;
+          if (obj.name && !obj.name.startsWith('__')) {
+            if (obj.isGroup || obj.isMesh) {
+              // Don't add if already covered by userData.parts
+              let isCovered = false;
+              selectableObjects.forEach(sel => {
+                sel.traverse(child => {
+                  if (child === obj) isCovered = true;
+                });
+              });
+              if (!isCovered) {
+                selectableObjects.add(obj);
+                obj.traverse((child) => {
+                  if (child.isMesh) coveredMeshes.add(child);
+                });
+              }
+            }
+          }
+        });
+
+        // Helper to get depth from root
+        function getDepth(obj) {
+          let depth = 0;
+          let current = obj.parent;
+          while (current && current !== currentAsset) {
+            depth++;
+            current = current.parent;
+          }
+          return depth;
+        }
+
+        // Add selectable objects (from userData.parts and named groups)
+        selectableObjects.forEach((obj) => {
+          const depth = getDepth(obj);
+          const type = obj.isGroup ? 'group' : 'mesh';
+          parts.push({
+            object: obj,
+            depth,
+            type,
+            displayName: obj.name || `${type}_${parts.length}`,
+            fromUserData: currentAsset.userData?.parts &&
+              Object.values(currentAsset.userData.parts).includes(obj)
+          });
+          // Store original transform
+          originalTransforms.set(obj.uuid, {
+            position: obj.position.clone(),
+            rotation: obj.rotation.clone(),
+            scale: obj.scale.clone()
+          });
+        });
+
+        // Third pass: add orphan meshes (not covered by any selectable object)
+        currentAsset.traverse((obj) => {
+          if (obj.isMesh && !obj.name.startsWith('__') && !coveredMeshes.has(obj)) {
+            const depth = getDepth(obj);
+            parts.push({
+              object: obj,
+              depth,
+              type: 'mesh',
+              displayName: obj.name || `mesh_${parts.length}`,
+              fromUserData: false
+            });
+            // Store original transform
+            originalTransforms.set(obj.uuid, {
+              position: obj.position.clone(),
+              rotation: obj.rotation.clone(),
+              scale: obj.scale.clone()
+            });
+          }
+          // Enable shadows on all meshes
+          if (obj.isMesh) {
+            obj.castShadow = true;
+            obj.receiveShadow = true;
+          }
+        });
+
+        // Sort by depth for display
+        parts.sort((a, b) => a.depth - b.depth);
+
+        updatePartsList();
+        updateExportPreview();
+        showToast(`Loaded: ${parts.length} selectable parts`, 'success');
+      } catch (err) {
+        console.error('Failed to load asset:', err);
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    // ============================================================
+    // Part Selection
+    // ============================================================
+
+    function onViewportClick(event) {
+      if (!currentAsset || parts.length === 0) return;
+      if (transformControls.dragging) return;
+
+      const rect = viewport.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+      );
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
+
+      // Raycast against all meshes in the asset
+      const allMeshes = [];
+      currentAsset.traverse((obj) => {
+        if (obj.isMesh && !obj.name.startsWith('__')) {
+          allMeshes.push(obj);
+        }
+      });
+
+      const intersects = raycaster.intersectObjects(allMeshes, false);
+
+      if (intersects.length > 0) {
+        // Find the selectable part that contains this mesh
+        const hitMesh = intersects[0].object;
+        const partEntry = findSelectablePartForMesh(hitMesh);
+        if (partEntry) {
+          selectPart(partEntry);
+        }
+      }
+    }
+
+    // Find which selectable part contains a given mesh
+    function findSelectablePartForMesh(mesh) {
+      // Check if mesh itself is a selectable part
+      let directPart = parts.find(p => p.object === mesh);
+      if (directPart) return directPart;
+
+      // Walk up to find containing selectable group
+      let current = mesh.parent;
+      while (current && current !== currentAsset) {
+        const partEntry = parts.find(p => p.object === current);
+        if (partEntry) return partEntry;
+        current = current.parent;
+      }
+      return null;
+    }
+
+    function selectPart(partEntry) {
+      selectedPart = partEntry;
+
+      // Highlight selected part (and all child meshes if it's a group)
+      // This also restores any previous highlights
+      highlightPart(partEntry.object);
+
+      // Attach transform controls
+      transformControls.attach(partEntry.object);
+      transformControls.setMode(transformMode);
+
+      // Update UI
+      updatePartsList();
+      updateTransformInputs();
+      resetPartBtn.disabled = false;
+    }
+
+    function highlightPart(obj) {
+      // Clear any previous highlights first
+      restoreHighlights();
+
+      // Highlight this object and all descendant meshes
+      // Clone materials to avoid affecting other meshes sharing the same material
+      obj.traverse((child) => {
+        if (child.isMesh && child.material && !Array.isArray(child.material)) {
+          // Store original material and create highlight clone
+          const originalMat = child.material;
+          const highlightMat = originalMat.clone();
+          if (highlightMat.emissive) {
+            highlightMat.emissive.set(0x664444);
+          }
+          child.material = highlightMat;
+
+          // Track for restoration
+          highlightedMeshes.push({
+            mesh: child,
+            originalMaterial: originalMat,
+            highlightMaterial: highlightMat
+          });
+        }
+      });
+    }
+
+    function restoreHighlights() {
+      // Restore all highlighted meshes to their original materials
+      for (const entry of highlightedMeshes) {
+        if (entry.mesh && entry.originalMaterial) {
+          entry.mesh.material = entry.originalMaterial;
+          if (entry.highlightMaterial) {
+            entry.highlightMaterial.dispose();
+          }
+        }
+      }
+      highlightedMeshes = [];
+    }
+
+    function updatePartsList() {
+      if (parts.length === 0) {
+        partsList.innerHTML = '<div class="no-parts">No asset loaded</div>';
+        return;
+      }
+
+      partsList.innerHTML = parts.map(partEntry => {
+        const isSelected = partEntry === selectedPart;
+        const customName = customNames.get(partEntry.object.uuid);
+        const displayName = customName || partEntry.displayName;
+        const typeIcon = partEntry.fromUserData ? '🎬' : (partEntry.type === 'group' ? '📦' : '◆');
+        const typeTitle = partEntry.fromUserData ? 'animation part' : partEntry.type;
+        const indent = partEntry.depth * 12;
+        const isCustomNamed = !!customName;
+
+        return `
+          <div class="part-item ${isSelected ? 'selected' : ''} ${partEntry.fromUserData ? 'anim-part' : ''}" data-uuid="${partEntry.object.uuid}" style="padding-left: ${12 + indent}px">
+            <div class="radio"></div>
+            <span class="part-type" title="${typeTitle}">${typeIcon}</span>
+            <span class="part-name ${isCustomNamed ? 'custom-named' : ''}">${displayName}</span>
+            ${isSelected ? `<button class="rename-btn" title="Rename part">✎</button>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      partsList.querySelectorAll('.part-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (e.target.classList.contains('rename-btn')) return;
+          const uuid = item.dataset.uuid;
+          const partEntry = parts.find(p => p.object.uuid === uuid);
+          if (partEntry) selectPart(partEntry);
+        });
+      });
+
+      // Add rename handlers
+      partsList.querySelectorAll('.rename-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const item = btn.closest('.part-item');
+          const uuid = item.dataset.uuid;
+          const partEntry = parts.find(p => p.object.uuid === uuid);
+          if (partEntry) promptRename(partEntry);
+        });
+      });
+    }
+
+    function promptRename(partEntry) {
+      const currentName = customNames.get(partEntry.object.uuid) || partEntry.displayName;
+      const newName = prompt('Enter part name:', currentName);
+      if (newName && newName.trim()) {
+        customNames.set(partEntry.object.uuid, newName.trim());
+        updatePartsList();
+        updateExportPreview();
+        showToast('Part renamed', 'success');
+      }
+    }
+
+    // ============================================================
+    // Transform Controls
+    // ============================================================
+
+    function setTransformMode(mode) {
+      transformMode = mode;
+      transformControls.setMode(mode);
+
+      modeButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+    }
+
+    function onTransformChange() {
+      if (selectedPart) {
+        updateTransformInputs();
+        updateExportPreview();
+      }
+    }
+
+    function updateTransformInputs() {
+      const enabled = selectedPart !== null;
+      const obj = selectedPart?.object;
+
+      Object.values(posInputs).forEach(inp => inp.disabled = !enabled);
+      Object.values(rotInputs).forEach(inp => inp.disabled = !enabled);
+      Object.values(sclInputs).forEach(inp => inp.disabled = !enabled);
+
+      if (obj) {
+        posInputs.x.value = round(obj.position.x);
+        posInputs.y.value = round(obj.position.y);
+        posInputs.z.value = round(obj.position.z);
+
+        rotInputs.x.value = round(THREE.MathUtils.radToDeg(obj.rotation.x));
+        rotInputs.y.value = round(THREE.MathUtils.radToDeg(obj.rotation.y));
+        rotInputs.z.value = round(THREE.MathUtils.radToDeg(obj.rotation.z));
+
+        sclInputs.x.value = round(obj.scale.x);
+        sclInputs.y.value = round(obj.scale.y);
+        sclInputs.z.value = round(obj.scale.z);
+      }
+    }
+
+    function applyTransformFromInputs() {
+      if (!selectedPart) return;
+      const obj = selectedPart.object;
+
+      obj.position.set(
+        parseFloat(posInputs.x.value) || 0,
+        parseFloat(posInputs.y.value) || 0,
+        parseFloat(posInputs.z.value) || 0
+      );
+
+      obj.rotation.set(
+        THREE.MathUtils.degToRad(parseFloat(rotInputs.x.value) || 0),
+        THREE.MathUtils.degToRad(parseFloat(rotInputs.y.value) || 0),
+        THREE.MathUtils.degToRad(parseFloat(rotInputs.z.value) || 0)
+      );
+
+      obj.scale.set(
+        parseFloat(sclInputs.x.value) || 1,
+        parseFloat(sclInputs.y.value) || 1,
+        parseFloat(sclInputs.z.value) || 1
+      );
+
+      updateExportPreview();
+    }
+
+    // ============================================================
+    // Reset Functions
+    // ============================================================
+
+    function resetPart(partEntry) {
+      const obj = partEntry.object;
+      const original = originalTransforms.get(obj.uuid);
+      if (original) {
+        obj.position.copy(original.position);
+        obj.rotation.copy(original.rotation);
+        obj.scale.copy(original.scale);
+      }
+    }
+
+    function resetAllParts() {
+      parts.forEach(partEntry => resetPart(partEntry));
+      updateTransformInputs();
+      updateExportPreview();
+      showToast('All parts reset', 'success');
+    }
+
+    // ============================================================
+    // Export
+    // ============================================================
+
+    function buildPartTweaks() {
+      const tweaks = [];
+
+      parts.forEach(partEntry => {
+        const obj = partEntry.object;
+        const original = originalTransforms.get(obj.uuid);
+        if (!original) return;
+
+        // Use custom name if set, otherwise use displayName
+        const name = customNames.get(obj.uuid) || partEntry.displayName;
+        const tweak = { name, type: partEntry.type };
+        let hasChanges = false;
+
+        // Check position
+        if (!obj.position.equals(original.position)) {
+          tweak.position = [round(obj.position.x), round(obj.position.y), round(obj.position.z)];
+          hasChanges = true;
+        }
+
+        // Check rotation (compare as degrees)
+        const rotX = round(THREE.MathUtils.radToDeg(obj.rotation.x));
+        const rotY = round(THREE.MathUtils.radToDeg(obj.rotation.y));
+        const rotZ = round(THREE.MathUtils.radToDeg(obj.rotation.z));
+        const origRotX = round(THREE.MathUtils.radToDeg(original.rotation.x));
+        const origRotY = round(THREE.MathUtils.radToDeg(original.rotation.y));
+        const origRotZ = round(THREE.MathUtils.radToDeg(original.rotation.z));
+
+        if (rotX !== origRotX || rotY !== origRotY || rotZ !== origRotZ) {
+          tweak.rotation = [rotX, rotY, rotZ];
+          hasChanges = true;
+        }
+
+        // Check scale
+        if (!obj.scale.equals(original.scale)) {
+          tweak.scale = [round(obj.scale.x), round(obj.scale.y), round(obj.scale.z)];
+          hasChanges = true;
+        }
+
+        if (hasChanges) {
+          tweaks.push(tweak);
+        }
+      });
+
+      return tweaks;
+    }
+
+    function updateExportPreview() {
+      const tweaks = buildPartTweaks();
+      exportPreview.value = JSON.stringify(tweaks, null, 2);
+    }
+
+    async function copyTweaksToClipboard() {
+      const tweaks = buildPartTweaks();
+      const json = JSON.stringify(tweaks, null, 2);
+
+      try {
+        await navigator.clipboard.writeText(json);
+        showToast('Copied to clipboard', 'success');
+      } catch (err) {
+        showToast('Failed to copy', 'error');
+      }
+    }
+
+    // ============================================================
+    // Utilities
+    // ============================================================
+
+    function round(value, decimals = 3) {
+      return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    }
+
+    function showToast(message, type = 'info') {
+      toast.textContent = message;
+      toast.className = 'toast ' + type;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // ============================================================
+    // Event Listeners
+    // ============================================================
+
+    presetSelect.addEventListener('change', (e) => {
+      if (e.target.value === 'custom') {
+        codeInput.style.display = 'block';
+        codeInput.value = '';
+      } else if (e.target.value) {
+        codeInput.style.display = 'none';
+        codeInput.value = SAMPLE_ASSETS[e.target.value] || '';
+      } else {
+        codeInput.style.display = 'none';
+        codeInput.value = '';
+      }
+    });
+
+    loadBtn.addEventListener('click', () => {
+      const preset = presetSelect.value;
+      let code = '';
+
+      if (preset === 'custom') {
+        code = codeInput.value.trim();
+      } else if (preset && SAMPLE_ASSETS[preset]) {
+        code = SAMPLE_ASSETS[preset];
+      }
+
+      if (code) {
+        loadAsset(code);
+      } else {
+        showToast('Select a preset or enter custom code', 'error');
+      }
+    });
+
+    modeButtons.forEach(btn => {
+      btn.addEventListener('click', () => setTransformMode(btn.dataset.mode));
+    });
+
+    // Transform inputs
+    [posInputs, rotInputs, sclInputs].forEach(inputs => {
+      Object.values(inputs).forEach(inp => {
+        inp.addEventListener('change', applyTransformFromInputs);
+      });
+    });
+
+    resetPartBtn.addEventListener('click', () => {
+      if (selectedPart) {
+        resetPart(selectedPart);
+        updateTransformInputs();
+        updateExportPreview();
+        showToast('Part reset', 'success');
+      }
+    });
+
+    resetAllBtn.addEventListener('click', resetAllParts);
+
+    copyBtn.addEventListener('click', copyTweaksToClipboard);
+
+    // ============================================================
+    // Initialize
+    // ============================================================
+
+    initScene();
+  </script>
+</body>
+</html>

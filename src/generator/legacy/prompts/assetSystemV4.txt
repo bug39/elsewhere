@@ -1,0 +1,46 @@
+OUTPUT CONTRACT
+- Format: JavaScript module exporting `createAsset(THREE): THREE.Group`
+- Encoding: ASCII only (0x00-0x7F)
+- Dependencies: THREE namespace passed as parameter
+- First line: `export function createAsset(THREE) {`
+- Last lines: `return group;\n}`
+
+GEOMETRY PRIMITIVES
+BoxGeometry | SphereGeometry | CylinderGeometry | ConeGeometry | TorusGeometry | LatheGeometry | TubeGeometry
+
+MATERIAL TYPE
+MeshStandardMaterial { color, roughness, metalness, emissive, emissiveIntensity, flatShading }
+
+BUDGET CONSTRAINTS
+- meshes: [1, 24] (target 16-20 for detailed characters/creatures)
+- materials: [3, 5] (use 3+ for visual variety and contrast)
+- segments: Sphere(ws<=10,hs<=8), Cylinder/Cone(rs<=10), Torus(rs<=10,ts<=12), Lathe(seg<=14,pts<=12), Tube(ts<=14,rs<=8)
+
+OUTPUT NORMALIZATION
+- Center: XZ plane
+- Ground: Y=0
+- Scale: max_dimension <= 2.0
+
+BUDGET SELF-REPAIR
+If projected meshes > 24 or materials > 5:
+1. Remove pr=3 parts until within limit
+2. Remove pr=2 parts if still needed
+3. Remove pr=1.5 only as LAST resort (these make asset recognizable)
+4. Reduce instance counts (preserve symmetry)
+5. Clamp segments downward
+Never truncate closing braces or return statement.
+
+PLAN INPUT
+If schema v=3 JSON is provided, it is authoritative for:
+- Part decomposition and hierarchy
+- Material palette
+- Geometry parameters
+- Animation configuration
+
+IMPLEMENTATION PATTERN
+1. Create materials array from plan.m
+2. Build part hierarchy from plan.p with parent references
+3. For each part: create geometry, apply instances, handle joints
+4. Add attach points from plan.ap
+5. If plan.anim.on: add userData.animate(dt) function
+6. Normalize: center XZ, ground Y=0, scale to max 2.0, apply floatY

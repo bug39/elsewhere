@@ -1,0 +1,103 @@
+OUTPUT CONTRACT
+- Format: JavaScript module exporting `createAsset(THREE): THREE.Group`
+- Encoding: ASCII only (0x00-0x7F)
+- Dependencies: THREE namespace passed as parameter
+- First line: `export function createAsset(THREE) {`
+- Last lines: `return group;\n}`
+
+GEOMETRY PRIMITIVES
+BoxGeometry | SphereGeometry | CylinderGeometry | ConeGeometry | TorusGeometry | LatheGeometry | TubeGeometry
+
+MATERIAL TYPE
+MeshStandardMaterial { color, roughness, metalness, emissive, emissiveIntensity, flatShading }
+
+BUDGET CONSTRAINTS
+- meshes: [1, 24] (target 16-20 for detailed characters/creatures)
+- materials: [3, 5] (use 3+ for visual variety and contrast)
+- segments: Sphere(ws<=10,hs<=8), Cylinder/Cone(rs<=10), Torus(rs<=10,ts<=12), Lathe(seg<=14,pts<=12), Tube(ts<=14,rs<=8)
+
+OUTPUT NORMALIZATION
+- Center: XZ plane
+- Ground: Y=0
+- Scale: max_dimension <= 2.0
+
+BUDGET SELF-REPAIR
+If projected meshes > 24 or materials > 5:
+1. Remove pr=3 parts until within limit
+2. Remove pr=2 parts if still needed
+3. Remove pr=1.5 only as LAST resort (these make asset recognizable)
+4. Reduce instance counts (preserve symmetry)
+5. Clamp segments downward
+Never truncate closing braces or return statement.
+
+PLAN INPUT
+If schema v=3 JSON is provided, it is authoritative for:
+- Part decomposition and hierarchy
+- Material palette
+- Geometry parameters
+- Animation configuration
+
+IMPLEMENTATION PATTERN
+1. Create materials array from plan.m
+2. Build part hierarchy from plan.p with parent references
+3. For each part: create geometry, apply instances, handle joints
+4. Add attach points from plan.ap
+5. If plan.anim.on: add userData.animate(dt) function
+6. Normalize: center XZ, ground Y=0, scale to max 2.0, apply floatY
+
+COLOR GUIDANCE
+- Ensure good contrast between primary and secondary colors
+- Use complementary or analogous color schemes
+- For dark/moody themes, add contrasting highlights
+
+CATEGORY-SPECIFIC COLORS
+Characters:
+  - Skin: warm tones (0xFFDBAC, 0xE8BEAC, 0xC68642)
+  - Hair: natural or vibrant (0x4A3728, 0x8B4513, 0xDAA520)
+  - Fabric: saturated primaries (0x4169E1, 0xDC143C, 0x228B22)
+  - Metal armor: silver/gray colors (0xB8B8B8, 0xC0C0C0) with r=0.7, met=0
+
+Creatures:
+  - Scales/skin: rich greens, purples (0x228B22, 0x4B0082)
+  - Eyes: bright, glowing colors (0xFFD700, 0xFF4500, 0x00FF00)
+  - Accents: contrasting highlights
+
+Buildings:
+  - Stone: medium grays (0x808080, 0xA9A9A9)
+  - Wood: warm browns (0x8B6914, 0xA0522D, 0xCD853F)
+  - Roof: deep but visible (0x8B0000, 0x2F4F4F, 0x8B4513)
+
+Nature:
+  - Bark: rich browns (0x5D4E37, 0x6B4423)
+  - Leaves: vibrant greens (0x228B22, 0x32CD32, 0x6B8E23)
+  - Flowers: bright saturated (0xFF69B4, 0xFFD700)
+
+Props/Vehicles:
+  - Metal: silver/gray colors (0x708090, 0x778899, 0xB8B8B8) with r=0.7, met=0
+  - Wood: warm natural (0x8B6914, 0xA0522D)
+  - Accents: contrasting brights
+
+GEOMETRY BEST PRACTICES
+Organic curves (tentacles, tails, vines):
+  - Use TubeGeometry with CatmullRomCurve3
+  - Path points: 4-8 for smooth curves
+  - Tube segments: 8-14, radial segments: 6-8
+
+Rounded bodies (heads, torsos, bulbs):
+  - Use SphereGeometry with scale transforms
+  - Segment counts: ws=8, hs=6 for low-poly look
+
+Tapered shapes (horns, claws, spikes):
+  - Use ConeGeometry or CylinderGeometry with rt < rb
+  - Radial segments: 6-8
+
+Tree trunks, columns, limbs:
+  - Use CylinderGeometry for straight
+  - Use LatheGeometry for organic taper
+  - Profile points: 4-8 for natural look
+
+PROPORTION GUIDELINES
+- Characters: head ~20% of height, legs ~50%, arms reach mid-thigh
+- Creatures: exaggerate defining features, readable silhouette
+- Buildings: chunky walls, exaggerated roof, door at 40% of height
+- Props: consistent hand-holdable or furniture scale

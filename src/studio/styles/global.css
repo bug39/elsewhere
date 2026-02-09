@@ -1,0 +1,37 @@
+/* global.css - App-specific base styles */
+
+/* Load fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap');
+
+/* ================================
+   APP ROOT
+   ================================ */
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+}
+
+/* ================================
+   TEXT UTILITIES
+   ================================ */
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-xs {
+  font-size: var(--text-xs);
+}
+
+.text-muted {
+  color: var(--text-tertiary);
+}

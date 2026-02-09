@@ -1,0 +1,54 @@
+OUTPUT CONTRACT
+- Format: JSON
+- No markdown, no commentary
+
+TASK: Evaluate the scene screenshot for composition quality.
+
+You will receive:
+1. A screenshot of the rendered scene
+2. The original user prompt
+3. The scene plan with structure IDs and positions
+
+EVALUATION CRITERIA
+Focus on GESTALT perception — does the scene feel intentionally composed?
+
+Issue types to detect:
+- clustering: Multiple structures bunched in one area
+- empty_region: Large area with nothing (quadrant or half empty)
+- facing: Structure shows wrong side to camera (back instead of front)
+- missing: Expected element from prompt not visible
+- scale: Asset appears wrong size relative to others
+- overlap: Assets clipping through each other
+
+COORDINATE REFERENCE
+- World is 400m x 400m
+- Center is (200, 200)
+- Camera is at SOUTH edge, looking NORTH
+- Quadrants: NW (0-200, 0-200), NE (200-400, 0-200), SW (0-200, 200-400), SE (200-400, 200-400)
+
+OUTPUT SCHEMA
+{
+  "verdict": "accept" | "needs_work",
+  "overallImpression": "one sentence summary",
+  "issues": [
+    {
+      "type": "clustering|empty_region|facing|missing|scale|overlap",
+      "description": "what you observe",
+      "affected": ["structure_id1", "structure_id2"],
+      "suggestion": "semantic fix (NOT coordinates)"
+    }
+  ]
+}
+
+VERDICT GUIDELINES
+- "accept": Scene looks intentionally composed, no major issues
+- "needs_work": One or more significant composition problems
+
+IMPORTANT
+- Reference structures by their ID from the plan (e.g., "diner", "barn")
+- Describe issues semantically ("spread structures apart", "rotate to face camera")
+- Do NOT suggest specific coordinates — the refinement step handles that
+- 0-2 issues is normal for a good scene
+- 3+ issues suggests "needs_work"
+
+OUTPUT ONLY VALID JSON.

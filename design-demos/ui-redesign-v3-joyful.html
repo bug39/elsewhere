@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>thinq UI Redesign v3 — Joyful</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* ==========================================
+         JOYFUL DESIGN SYSTEM
+         
+         Inspired by Super Monkey Ball, Katamari,
+         early 2000s Japanese arcade games.
+         
+         Bright. Rounded. Confident. Fun.
+         ========================================== */
+      
+      /* Sky - the foundation is light and airy */
+      --sky: #f0f7ff;
+      --sky-warm: #fffbf5;
+      --white: #ffffff;
+      
+      /* Clouds - soft grays */
+      --cloud: #e8eef5;
+      --cloud-dark: #d0d8e3;
+      
+      /* Text */
+      --ink: #1a1a2e;
+      --ink-soft: #4a4a5a;
+      --ink-muted: #8a8a9a;
+      
+      /* Primary - Sunny orange (the main action color) */
+      --sunny: #ff9500;
+      --sunny-light: #ffb84d;
+      --sunny-dark: #e68600;
+      
+      /* Accent palette - bold and happy */
+      --cherry: #ff3b5c;
+      --sky-blue: #00a3ff;
+      --leaf: #34c759;
+      --grape: #af52de;
+      --banana: #ffcc00;
+      
+      /* Category colors */
+      --cat-characters: var(--sunny);
+      --cat-creatures: var(--grape);
+      --cat-buildings: var(--cherry);
+      --cat-props: var(--cloud-dark);
+      --cat-nature: var(--leaf);
+      --cat-vehicles: var(--sky-blue);
+      
+      /* Typography */
+      --font: "Nunito", system-ui, sans-serif;
+      
+      /* Spacing */
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-6: 24px;
+      --sp-8: 32px;
+      
+      /* Radii - everything is friendly and rounded */
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --r-xl: 24px;
+      --r-full: 9999px;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      background: linear-gradient(180deg, var(--sky) 0%, var(--sky-warm) 100%);
+      color: var(--ink);
+      line-height: 1.4;
+      padding: 40px;
+      min-height: 100vh;
+    }
+    
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    
+    .subtitle {
+      color: var(--ink-muted);
+      margin-bottom: 48px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 48px 0 20px 0;
+    }
+    
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+    
+    .demo-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      margin-bottom: 12px;
+    }
+    
+    /* ==========================================
+       PANELS - Soft and pillowy
+       ========================================== */
+    
+    .panel {
+      width: 300px;
+      background: var(--white);
+      border-radius: var(--r-lg);
+      box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--white);
+      border-bottom: 2px solid var(--cloud);
+    }
+    
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    
+    .panel-content {
+      padding: 16px;
+      flex: 1;
+    }
+    
+    /* ==========================================
+       BUTTONS - Chunky and satisfying
+       ========================================== */
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 16px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--white);
+      border: 2px solid var(--cloud-dark);
+      border-radius: var(--r-full);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    
+    .btn:hover {
+      background: var(--cloud);
+      border-color: var(--ink-muted);
+      transform: translateY(-1px);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .btn--primary {
+      background: var(--sunny);
+      border-color: var(--sunny-dark);
+      color: var(--white);
+      box-shadow: 0 3px 0 var(--sunny-dark);
+    }
+    
+    .btn--primary:hover {
+      background: var(--sunny-light);
+      border-color: var(--sunny);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 var(--sunny-dark);
+    }
+    
+    .btn--primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 var(--sunny-dark);
+    }
+    
+    .btn--danger {
+      color: var(--cherry);
+      border-color: rgba(255, 59, 92, 0.3);
+    }
+    
+    .btn--danger:hover {
+      background: rgba(255, 59, 92, 0.1);
+      border-color: var(--cherry);
+    }
+    
+    .btn--sm {
+      height: 30px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+    
+    .btn--icon {
+      width: 36px;
+      padding: 0;
+    }
+    
+    .btn--sm.btn--icon {
+      width: 30px;
+    }
+    
+    /* ==========================================
+       INPUTS - Friendly and inviting
+       ========================================== */
+    
+    .input {
+      width: 100%;
+      height: 44px;
+      padding: 0 16px;
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--white);
+      border: 2px solid var(--cloud-dark);
+      border-radius: var(--r-md);
+      transition: all 0.15s ease;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: var(--sunny);
+      box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.15);
+    }
+    
+    .input::placeholder {
+      color: var(--ink-muted);
+      font-weight: 500;
+    }
+    
+    .input--sm {
+      height: 32px;
+      padding: 0 10px;
+      font-size: 13px;
+      border-radius: var(--r-sm);
+    }
+    
+    /* ==========================================
+       BADGES - Candy-colored pills
+       ========================================== */
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      border-radius: var(--r-full);
+    }
+    
+    .badge--characters {
+      background: rgba(255, 149, 0, 0.15);
+      color: var(--sunny-dark);
+    }
+    
+    .badge--creatures {
+      background: rgba(175, 82, 222, 0.15);
+      color: var(--grape);
+    }
+    
+    .badge--buildings {
+      background: rgba(255, 59, 92, 0.15);
+      color: var(--cherry);
+    }
+    
+    .badge--props {
+      background: var(--cloud);
+      color: var(--ink-soft);
+    }
+    
+    .badge--nature {
+      background: rgba(52, 199, 89, 0.15);
+      color: var(--leaf);
+    }
+    
+    .badge--vehicles {
+      background: rgba(0, 163, 255, 0.15);
+      color: var(--sky-blue);
+    }
+    
+    /* ==========================================
+       CREATE PANEL
+       ========================================== */
+    
+    .create-panel {
+      min-height: 400px;
+    }
+    
+    .create-hero {
+      padding: 20px 16px;
+      background: linear-gradient(180deg, #fff8f0 0%, var(--white) 100%);
+      border-bottom: 2px solid var(--cloud);
+    }
+    
+    .create-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--sunny-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .create-label::before {
+      content: "✦";
+      font-size: 10px;
+    }
+    
+    .create-form {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .create-input {
+      flex: 1;
+    }
+    
+    .create-submit {
+      width: 48px;
+      height: 48px;
+      background: var(--sunny);
+      border: none;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 0 var(--sunny-dark);
+      transition: all 0.15s ease;
+    }
+    
+    .create-submit:hover {
+      background: var(--sunny-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--sunny-dark);
+    }
+    
+    .create-submit:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--sunny-dark);
+    }
+    
+    .create-submit svg {
+      width: 22px;
+      height: 22px;
+      color: var(--white);
+    }
+    
+    /* Ideas */
+    .ideas-section {
+      padding: 14px 16px;
+      border-bottom: 2px solid var(--cloud);
+    }
+    
+    .ideas-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      margin-bottom: 8px;
+    }
+    
+    .ideas-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    .idea-chip {
+      padding: 6px 12px;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      background: var(--cloud);
+      border: none;
+      border-radius: var(--r-full);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    
+    .idea-chip:hover {
+      background: var(--sunny);
+      color: var(--white);
+      transform: scale(1.05);
+    }
+    
+    /* Queue */
+    .queue-section {
+      padding: 14px 16px;
+      flex: 1;
+    }
+    
+    .queue-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .queue-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-muted);
+    }
+    
+    .queue-count {
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--sunny);
+      color: var(--white);
+      border-radius: var(--r-full);
+    }
+    
+    .queue-empty {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--ink-muted);
+      font-size: 13px;
+    }
+    
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--cloud);
+      border-radius: var(--r-md);
+      margin-bottom: 8px;
+    }
+    
+    .queue-item__icon {
+      width: 36px;
+      height: 36px;
+      background: var(--white);
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .queue-item__spinner {
+      width: 18px;
+      height: 18px;
+      border: 3px solid var(--cloud-dark);
+      border-top-color: var(--sunny);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .queue-item__content {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .queue-item__name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .queue-item__status {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sunny-dark);
+    }
+    
+    .queue-item__progress {
+      height: 4px;
+      background: var(--cloud-dark);
+      border-radius: var(--r-full);
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    
+    .queue-item__progress-bar {
+      height: 100%;
+      background: var(--sunny);
+      border-radius: var(--r-full);
+      transition: width 0.3s ease;
+    }
+    
+    /* ==========================================
+       INSPECTOR PANEL
+       ========================================== */
+    
+    .inspector-panel {
+      min-height: 480px;
+    }
+    
+    /* Empty state */
+    .inspector-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+      text-align: center;
+    }
+    
+    .inspector-empty__icon {
+      width: 56px;
+      height: 56px;
+      background: var(--cloud);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+    
+    .inspector-empty__text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+    
+    /* With selection */
+    .asset-preview {
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: linear-gradient(180deg, var(--cloud) 0%, var(--sky) 100%);
+      border-radius: var(--r-md);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .asset-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    
+    .asset-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+    
+    .asset-meta {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+    
+    .action-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    
+    .divider {
+      height: 2px;
+      background: var(--cloud);
+      border-radius: var(--r-full);
+      margin: 16px 0;
+    }
+    
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      margin-bottom: 10px;
+    }
+    
+    /* Transform inputs */
+    .transform-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .transform-label {
+      width: 56px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+    
+    .transform-inputs {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+    
+    .transform-field {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--cloud);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+    }
+    
+    .transform-axis {
+      width: 22px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--white);
+    }
+    
+    .transform-axis--x { background: var(--cherry); }
+    .transform-axis--y { background: var(--leaf); }
+    .transform-axis--z { background: var(--sky-blue); }
+    
+    .transform-input {
+      flex: 1;
+      height: 32px;
+      padding: 0 8px;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      background: transparent;
+      border: none;
+      text-align: right;
+    }
+    
+    .transform-input:focus {
+      outline: none;
+      background: var(--white);
+    }
+    
+    .transform-input--disabled {
+      color: var(--ink-muted);
+    }
+    
+    /* ==========================================
+       LIBRARY CARDS
+       ========================================== */
+    
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    
+    .library-card {
+      background: var(--white);
+      border: 2px solid var(--cloud);
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      overflow: hidden;
+    }
+    
+    .library-card:hover {
+      border-color: var(--sunny);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .library-card:hover .library-card__overlay {
+      opacity: 1;
+    }
+    
+    .library-card__thumb {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--cloud);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      position: relative;
+    }
+    
+    .library-card__category {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--white);
+    }
+    
+    .library-card__category--nature { background: var(--leaf); }
+    .library-card__category--buildings { background: var(--cherry); }
+    .library-card__category--vehicles { background: var(--sky-blue); }
+    .library-card__category--characters { background: var(--sunny); }
+    
+    .library-card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,0.75) 0%, transparent 60%);
+      display: flex;
+      align-items: flex-end;
+      padding: 10px;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    
+    .library-card__name {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+    }
+    
+    .library-card__label {
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    /* ==========================================
+       FULL LAYOUT
+       ========================================== */
+    
+    .layout-preview {
+      display: flex;
+      gap: 2px;
+      background: var(--cloud-dark);
+      padding: 4px;
+      border-radius: var(--r-lg);
+      margin-top: 32px;
+    }
+    
+    .layout-preview .panel {
+      border-radius: var(--r-md);
+      box-shadow: none;
+    }
+    
+    .layout-viewport {
+      flex: 1;
+      min-height: 360px;
+      background: linear-gradient(180deg, #c8e0ff 0%, #a8d0ff 50%, #90c8b0 100%);
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    /* ==========================================
+       NOTES
+       ========================================== */
+    
+    .notes {
+      background: var(--white);
+      border-left: 4px solid var(--sunny);
+      border-radius: 0 var(--r-md) var(--r-md) 0;
+      padding: 16px 20px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .notes h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--sunny-dark);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .notes ul {
+      margin-left: 16px;
+    }
+    
+    .notes li {
+      margin-bottom: 4px;
+    }
+    
+    /* ==========================================
+       BADGE SHOWCASE
+       ========================================== */
+    
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+  </style>
+</head>
+<body>
+  <h1>thinq — Joyful Design</h1>
+  <p class="subtitle">Bright. Rounded. Confident. Like a sunny day at the arcade.</p>
+  
+  <!-- ==========================================
+       CREATE PANEL
+       ========================================== -->
+  
+  <h2 class="section-title">Create Panel</h2>
+  
+  <div class="comparison">
+    <div>
+      <div class="demo-label">Asset Creation</div>
+      <div class="panel create-panel">
+        <div class="panel-header">
+          <span class="panel-title">✦ Create</span>
+        </div>
+        
+        <div class="create-hero">
+          <div class="create-label">New Asset</div>
+          <div class="create-form">
+            <input type="text" class="input create-input" placeholder="Describe what you want..." style="height: 48px; font-size: 15px;">
+            <button class="create-submit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M13 5l7 7-7 7M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="ideas-section">
+          <div class="ideas-label">Try these</div>
+          <div class="ideas-chips">
+            <button class="idea-chip">robot</button>
+            <button class="idea-chip">knight</button>
+            <button class="idea-chip">dragon</button>
+            <button class="idea-chip">cottage</button>
+            <button class="idea-chip">wizard</button>
+          </div>
+        </div>
+        
+        <div class="queue-section">
+          <div class="queue-header">
+            <span class="queue-title">In Progress</span>
+            <span class="queue-count">1</span>
+          </div>
+          
+          <div class="queue-item">
+            <div class="queue-item__icon">
+              <div class="queue-item__spinner"></div>
+            </div>
+            <div class="queue-item__content">
+              <div class="queue-item__name">medieval stone cottage</div>
+              <div class="queue-item__status">Generating... 12s</div>
+              <div class="queue-item__progress">
+                <div class="queue-item__progress-bar" style="width: 65%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="notes" style="align-self: start; margin-top: 32px;">
+      <h4>Design Notes</h4>
+      <ul>
+        <li><strong>Light foundation:</strong> Sky-blue gradient, feels airy and optimistic</li>
+        <li><strong>Rounded everything:</strong> Pill buttons, soft cards, friendly corners</li>
+        <li><strong>Chunky buttons:</strong> 3D shadow effect, satisfying to click</li>
+        <li><strong>Sunny orange:</strong> Warm, energetic primary action color</li>
+        <li><strong>Nunito font:</strong> Rounded, friendly, but still readable</li>
+        <li><strong>No darkness:</strong> Even shadows are soft and warm</li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- ==========================================
+       INSPECTOR PANEL
+       ========================================== -->
+  
+  <h2 class="section-title">Inspector Panel</h2>
+  
+  <div class="comparison">
+    <div>
+      <div class="demo-label">Empty State</div>
+      <div class="panel inspector-panel" style="min-height: 280px;">
+        <div class="panel-header">
+          <span class="panel-title">Inspector</span>
+        </div>
+        <div class="panel-content">
+          <div class="inspector-empty">
+            <div class="inspector-empty__icon">👆</div>
+            <div class="inspector-empty__text">Tap an asset to inspect it</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <div class="demo-label">With Selection</div>
+      <div class="panel inspector-panel">
+        <div class="panel-header">
+          <span class="panel-title">Inspector</span>
+        </div>
+        <div class="panel-content">
+          <div class="asset-preview">[ 3D Preview ]</div>
+          
+          <div class="asset-header">
+            <div>
+              <div class="asset-name">Stone Cottage</div>
+              <div class="asset-meta">1 in world · Jan 27</div>
+            </div>
+            <span class="badge badge--buildings">Building</span>
+          </div>
+          
+          <div class="action-row">
+            <button class="btn btn--sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+              </svg>
+              Duplicate
+            </button>
+            <button class="btn btn--sm">Edit Parts</button>
+            <button class="btn btn--sm btn--icon btn--danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="section-label">Transform</div>
+          
+          <div class="transform-row">
+            <span class="transform-label">Position</span>
+            <div class="transform-inputs">
+              <div class="transform-field">
+                <span class="transform-axis transform-axis--x">X</span>
+                <input class="transform-input" value="120.5" readonly>
+              </div>
+              <div class="transform-field">
+                <span class="transform-axis transform-axis--y">Y</span>
+                <input class="transform-input" value="0" readonly>
+              </div>
+              <div class="transform-field">
+                <span class="transform-axis transform-axis--z">Z</span>
+                <input class="transform-input" value="85.2" readonly>
+              </div>
+            </div>
+          </div>
+          
+          <div class="transform-row">
+            <span class="transform-label">Rotation</span>
+            <div class="transform-inputs">
+              <div class="transform-field">
+                <span class="transform-axis transform-axis--x">X</span>
+                <input class="transform-input transform-input--disabled" value="—" readonly>
+              </div>
+              <div class="transform-field">
+                <span class="transform-axis transform-axis--y">Y</span>
+                <input class="transform-input" value="45°" readonly>
+              </div>
+              <div class="transform-field">
+                <span class="transform-axis transform-axis--z">Z</span>
+                <input class="transform-input transform-input--disabled" value="—" readonly>
+              </div>
+            </div>
+          </div>
+          
+          <div class="transform-row">
+            <span class="transform-label">Scale</span>
+            <div class="transform-inputs">
+              <div class="transform-field" style="max-width: 80px;">
+                <input class="transform-input" value="12" readonly style="padding-left: 10px; text-align: center;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ==========================================
+       LIBRARY CARDS
+       ========================================== -->
+  
+  <h2 class="section-title">Library Cards</h2>
+  
+  <div class="comparison">
+    <div>
+      <div class="demo-label">Asset Grid</div>
+      <div class="panel" style="min-height: 360px; width: 320px;">
+        <div class="panel-header">
+          <span class="panel-title">Library</span>
+        </div>
+        <div class="panel-content">
+          <div class="library-grid">
+            <div class="library-card">
+              <div class="library-card__thumb">
+                🏠
+                <div class="library-card__category library-card__category--buildings"></div>
+                <div class="library-card__overlay">
+                  <div class="library-card__name">1970s movie theater with neon marquee</div>
+                </div>
+              </div>
+              <div class="library-card__label">1970s movie thea...</div>
+            </div>
+            <div class="library-card">
+              <div class="library-card__thumb">
+                🚗
+                <div class="library-card__category library-card__category--vehicles"></div>
+                <div class="library-card__overlay">
+                  <div class="library-card__name">1970s orange muscle car</div>
+                </div>
+              </div>
+              <div class="library-card__label">1970s orange mu...</div>
+            </div>
+            <div class="library-card">
+              <div class="library-card__thumb">
+                🌲
+                <div class="library-card__category library-card__category--nature"></div>
+                <div class="library-card__overlay">
+                  <div class="library-card__name">Low-poly pine tree</div>
+                </div>
+              </div>
+              <div class="library-card__label">Low-poly pine tree</div>
+            </div>
+            <div class="library-card">
+              <div class="library-card__thumb">
+                🧙
+                <div class="library-card__category library-card__category--characters"></div>
+                <div class="library-card__overlay">
+                  <div class="library-card__name">Wizard with staff</div>
+                </div>
+              </div>
+              <div class="library-card__label">Wizard with staff</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="notes" style="align-self: start; margin-top: 32px;">
+      <h4>Library Improvements</h4>
+      <ul>
+        <li><strong>Cards lift on hover:</strong> Playful, tactile feedback</li>
+        <li><strong>Orange border on hover:</strong> Clear selection affordance</li>
+        <li><strong>Colored dots:</strong> Category at a glance, not intrusive</li>
+        <li><strong>Overlay reveal:</strong> Full name on hover, no layout shift</li>
+        <li><strong>Truncated label below:</strong> Always visible for scanning</li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- ==========================================
+       BADGES
+       ========================================== -->
+  
+  <h2 class="section-title">Category Badges</h2>
+  
+  <div class="badge-row">
+    <span class="badge badge--characters">Character</span>
+    <span class="badge badge--creatures">Creature</span>
+    <span class="badge badge--buildings">Building</span>
+    <span class="badge badge--props">Prop</span>
+    <span class="badge badge--nature">Nature</span>
+    <span class="badge badge--vehicles">Vehicle</span>
+  </div>
+  
+  <!-- ==========================================
+       FULL LAYOUT
+       ========================================== -->
+  
+  <h2 class="section-title">Full Layout</h2>
+  
+  <div class="layout-preview">
+    <div class="panel" style="width: 300px; min-height: 360px;">
+      <div class="panel-header">
+        <span class="panel-title">✦ Create</span>
+      </div>
+      <div class="panel-content" style="padding: 0;">
+        <div class="create-hero" style="padding: 14px;">
+          <div class="create-label" style="font-size: 11px;">New Asset</div>
+          <div class="create-form">
+            <input type="text" class="input create-input" placeholder="Describe..." style="height: 40px;">
+            <button class="create-submit" style="width: 40px; height: 40px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;">
+                <path d="M13 5l7 7-7 7M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="layout-viewport">
+      ✦ 3D World ✦
+    </div>
+    
+    <div class="panel" style="width: 260px; min-height: 360px;">
+      <div class="panel-header">
+        <span class="panel-title">Inspector</span>
+      </div>
+      <div class="panel-content">
+        <div class="inspector-empty" style="padding: 24px 12px;">
+          <div class="inspector-empty__icon" style="width: 44px; height: 44px; font-size: 20px;">👆</div>
+          <div class="inspector-empty__text" style="font-size: 13px;">Tap to inspect</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="notes" style="margin-top: 24px;">
+    <h4>Design Philosophy</h4>
+    <ul>
+      <li><strong>Optimistic:</strong> Light backgrounds, warm colors — feels like possibility</li>
+      <li><strong>Tactile:</strong> Buttons have depth, cards lift, everything feels touchable</li>
+      <li><strong>Confident:</strong> Bold typography, clear hierarchy, no hesitation</li>
+      <li><strong>Playful but functional:</strong> Fun doesn't mean cluttered or confusing</li>
+      <li><strong>Nintendo energy:</strong> Clean, colorful, inviting to all skill levels</li>
+    </ul>
+  </div>
+
+</body>
+</html>

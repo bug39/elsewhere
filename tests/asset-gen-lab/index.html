@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Asset Gen Stress Lab</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #0f0f14;
+      color: #e6e6e6;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 10px 16px;
+      background: #161621;
+      border-bottom: 1px solid #2a2a3a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .controls input {
+      padding: 6px 10px;
+      border: 1px solid #3a3a4a;
+      border-radius: 4px;
+      background: #0f0f14;
+      color: #e6e6e6;
+      width: 240px;
+      font-size: 0.85rem;
+    }
+
+    .controls input[type="number"] {
+      width: 70px;
+    }
+
+    .controls select {
+      padding: 6px 8px;
+      border: 1px solid #3a3a4a;
+      border-radius: 4px;
+      background: #0f0f14;
+      color: #e6e6e6;
+      font-size: 0.85rem;
+    }
+
+    button {
+      padding: 7px 12px;
+      border: 1px solid #3a3a4a;
+      border-radius: 4px;
+      background: #2a2a3a;
+      color: #e6e6e6;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .matrix-wrap {
+      flex: 1;
+      overflow: auto;
+      padding: 8px;
+    }
+
+    .matrix {
+      display: grid;
+      gap: 6px;
+      align-items: start;
+    }
+
+    .cell {
+      border: 1px solid #2a2a3a;
+      border-radius: 4px;
+      background: #11111a;
+      padding: 6px;
+      min-width: 200px;
+      min-height: 160px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cell.header {
+      background: #1b1b28;
+      font-weight: 600;
+      min-height: 44px;
+      justify-content: center;
+    }
+
+    .cell.prompt {
+      background: #141421;
+    }
+
+    .cell.prompt input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #333344;
+      border-radius: 4px;
+      background: #0f0f14;
+      color: #e6e6e6;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+
+    .cell.prompt button {
+      align-self: flex-start;
+    }
+
+    .status {
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 3px;
+      align-self: flex-start;
+      background: #2a2a3a;
+      margin-bottom: 4px;
+    }
+
+    .status.pass { background: #1f5f3a; }
+    .status.fail { background: #7a1f1f; }
+    .status.warn { background: #7a5a1f; }
+    .status.running { background: #3b3b86; }
+
+    .cell canvas {
+      width: 100%;
+      height: 100px;
+      border: 1px solid #1f1f2a;
+      border-radius: 3px;
+      background: #0b0b12;
+    }
+
+    .preview {
+      width: 100%;
+      height: 100px;
+      border: 1px dashed #1f1f2a;
+      border-radius: 3px;
+      background: #0b0b12;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6f6f80;
+      font-size: 0.7rem;
+    }
+
+    .metrics {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: #b0b0c0;
+      white-space: pre-wrap;
+    }
+
+    .run-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 0.7rem;
+      padding: 3px 6px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .cell:hover .run-btn { opacity: 1; }
+
+    .details {
+      width: 360px;
+      border-left: 1px solid #2a2a3a;
+      background: #141421;
+      padding: 10px 12px;
+      overflow: auto;
+    }
+
+    .details h2 {
+      margin: 0 0 8px 0;
+      font-size: 1rem;
+    }
+
+    .details pre {
+      background: #0f0f14;
+      border: 1px solid #2a2a3a;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 0.75rem;
+      color: #d6d6e0;
+      white-space: pre-wrap;
+      margin: 6px 0 10px 0;
+    }
+
+    .details summary {
+      cursor: pointer;
+      padding: 4px 0;
+      font-size: 0.85rem;
+    }
+
+    .summary-bar {
+      padding: 8px 16px;
+      background: #161621;
+      border-top: 1px solid #2a2a3a;
+      font-size: 0.85rem;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .summary-stat {
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: #2a2a3a;
+    }
+
+    .summary-stat.pass { background: #1f5f3a; }
+    .summary-stat.fail { background: #7a1f1f; }
+    .summary-stat.warn { background: #7a5a1f; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Asset Gen Stress Lab</h1>
+    <div class="controls">
+      <input id="api-key" type="password" placeholder="Gemini API key">
+      <select id="api-version" title="API version" aria-label="API version">
+        <option value="v1beta">v1beta</option>
+        <option value="v1">v1</option>
+      </select>
+      <select id="system-mode" title="System prompt mode" aria-label="System prompt mode">
+        <option value="systemInstruction">systemInstruction</option>
+        <option value="inline">inline system prompt</option>
+      </select>
+      <select id="thinking-mode" title="Thinking param" aria-label="Thinking param">
+        <option value="off">thinking OFF (budget=0)</option>
+        <option value="budget">thinking BUDGET mode</option>
+        <option value="root">thinking root (legacy)</option>
+        <option value="gen-config">thinking gen-config (legacy)</option>
+      </select>
+      <select id="preview-mode" title="Preview mode" aria-label="Preview mode">
+        <option value="none">no previews</option>
+        <option value="on-run">preview on run</option>
+        <option value="always">always preview</option>
+      </select>
+      <input id="parallel" type="number" min="1" max="30" step="1" value="30" title="Parallel runs" aria-label="Parallel runs">
+      <button id="run-all">Run All</button>
+      <button id="stop">Stop</button>
+      <button id="export">Export</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="matrix-wrap">
+      <div id="matrix" class="matrix"></div>
+    </div>
+    <aside class="details">
+      <h2 id="details-title">Select a cell</h2>
+      <div id="details-status">Status: -</div>
+      <div id="details-error">Error: -</div>
+      <details open>
+        <summary>Metrics</summary>
+        <pre id="details-metrics">-</pre>
+      </details>
+      <details>
+        <summary>Warnings</summary>
+        <pre id="details-warnings">-</pre>
+      </details>
+      <details>
+        <summary>API</summary>
+        <pre id="details-api">-</pre>
+      </details>
+      <details>
+        <summary>Code</summary>
+        <pre id="details-code">-</pre>
+      </details>
+      <details>
+        <summary>Plan</summary>
+        <pre id="details-plan">-</pre>
+      </details>
+      <details>
+        <summary>Raw Output</summary>
+        <pre id="details-raw">-</pre>
+      </details>
+    </aside>
+  </main>
+
+  <div class="summary-bar">
+    <div class="summary-stat pass" id="summary-pass">Pass: 0</div>
+    <div class="summary-stat warn" id="summary-warn">Warn: 0</div>
+    <div class="summary-stat fail" id="summary-fail">Fail: 0</div>
+    <div class="summary-stat" id="summary-pending">Pending: 0</div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="./suite.js"></script>
+</body>
+</html>

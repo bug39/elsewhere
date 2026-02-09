@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Manrope:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+body.theme-cinematic {
+  --font-sans: 'Manrope', sans-serif;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --bg: linear-gradient(180deg, #0e1116 0%, #131821 60%, #0f141c 100%);
+  --panel-bg: rgba(255, 255, 255, 0.07);
+  --surface: rgba(255, 255, 255, 0.1);
+  --viewport-bg: radial-gradient(circle at 30% 20%, rgba(244, 201, 93, 0.18), transparent 45%),
+    linear-gradient(180deg, #11151e 0%, #1a212b 100%);
+  --asset-thumb: linear-gradient(135deg, rgba(244, 201, 93, 0.35) 0%, rgba(125, 209, 194, 0.2) 100%);
+  --text: #f2f0ea;
+  --text-muted: rgba(242, 240, 234, 0.7);
+  --line: rgba(255, 255, 255, 0.2);
+  --line-strong: rgba(255, 255, 255, 0.35);
+  --accent: #f4c95d;
+  --accent-contrast: #1a1f27;
+  --accent-soft: rgba(244, 201, 93, 0.2);
+  --link: #f4c95d;
+  --shadow-color: rgba(0, 0, 0, 0.45);
+  --chip-bg: rgba(255, 255, 255, 0.08);
+  --chip-active: rgba(244, 201, 93, 0.2);
+  --callout-bg: rgba(255, 255, 255, 0.08);
+}
+
+body.theme-cinematic::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 80% 15%, rgba(125, 209, 194, 0.18), transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(244, 201, 93, 0.12), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.theme-cinematic .app {
+  position: relative;
+  z-index: 1;
+}
+
+body.theme-cinematic h1,
+body.theme-cinematic h2 {
+  font-family: var(--font-display);
+}
+
+body.theme-cinematic .panel,
+body.theme-cinematic .viewport-panel {
+  backdrop-filter: blur(12px);
+}
+
+body.theme-cinematic .viewport::before {
+  content: '';
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(244, 201, 93, 0.25);
+  border-radius: 16px;
+}
+
+body.theme-cinematic .viewport::after {
+  content: 'Scene 12 - dusk valley';
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
