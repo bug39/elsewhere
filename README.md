@@ -2,7 +2,7 @@
 
 **AI-Powered 3D World Studio**
 
-Describe what you want and AI builds it — 3D assets, entire scenes, living worlds you can explore in third person. Built for the Gemini API Developer Competition.
+Describe what you want and AI builds it — 3D assets, entire scenes, living worlds you can explore in third person. Built for Google's Gemini 3 Hackathon
 
 ## What You Can Do
 
