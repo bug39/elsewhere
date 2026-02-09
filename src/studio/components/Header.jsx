@@ -99,6 +99,15 @@ export function Header({ worldName, mode, onPlay, onStopPlay, onSave, onHome, on
       <div class="header-right">
         {mode === 'edit' && (
           <>
+            <Tooltip content="Generate a scene" position="bottom">
+              <button
+                class="btn btn--ghost"
+                onClick={onShowSceneGenerator}
+                aria-label="Generate a scene"
+              >
+                Scene
+              </button>
+            </Tooltip>
             <Tooltip content="Render settings" position="bottom">
               <button
                 class="btn btn--ghost"

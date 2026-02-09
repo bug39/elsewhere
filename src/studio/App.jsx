@@ -16,6 +16,7 @@ import { SettingsModal, loadSettings } from './components/SettingsModal'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { Walkthrough } from './components/Walkthrough'
 import { TutorialBanner } from './components/TutorialBanner'
+import { SceneGeneratorPanel } from './components/SceneGeneratorPanel'
 import { DirectorView } from '../director/components/DirectorView'
 import { onboardingState, startOnboarding, stopOnboarding, isOnboardingComplete } from './state/walkthroughState'
 import { loadQueue, clearQueueForWorld, generationQueue, isBatchComplete, addToQueue } from './state/generationQueue'
@@ -69,6 +70,7 @@ export function App() {
   const [showWelcome, setShowWelcome] = useState(!isOnboardingComplete())
   const [walkthroughReady, setWalkthroughReady] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showSceneGenerator, setShowSceneGenerator] = useState(false)
   const [panelState, setPanelState] = useState(loadPanelState)
 
   // Save panel state to localStorage
@@ -403,6 +405,7 @@ export function App() {
         onHome={() => appMode.value = 'home'}
         onShowHelp={() => setShowHelpOverlay(true)}
         onShowSettings={() => setShowSettings(true)}
+        onShowSceneGenerator={() => setShowSceneGenerator(true)}
         onWorldNameChange={world.updateWorldName}
         isSaving={isSaving}
         isDirty={world.isDirty}
@@ -499,6 +502,14 @@ export function App() {
           worldId={world.data?.meta?.id}
         />
       )}
+
+      {/* Scene Generator Panel */}
+      <SceneGeneratorPanel
+        isOpen={showSceneGenerator}
+        onClose={() => setShowSceneGenerator(false)}
+        world={world}
+        rendererRef={viewportRef.current?.rendererRef}
+      />
 
       {/* Settings Modal */}
       <SettingsModal
