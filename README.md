@@ -1,8 +1,8 @@
-# thinq
+# elsewhere
 
-**3D Studio for Living Worlds**
+**3D Studio for Living Worlds** — Built for the Gemini API Hackathon
 
-A world-building studio where users conjure assets from AI prompts, arrange them into worlds, script NPC behaviors and dialogue, then play and share their creations.
+A world-building studio where users conjure assets from AI prompts, arrange them into worlds, script NPC behaviors and dialogue, then explore their creations.
 
 ## Quick Start
 
@@ -25,16 +25,16 @@ Open http://localhost:3000 in your browser.
 Create 3D assets from natural language prompts. AI generates complete Three.js code with materials, animations, and proper pivot groups for procedural animation.
 
 ### Arrange
-Place assets in a 200m × 200m world with grid-based terrain. Edit elevation, paint textures, and transform objects with visual gizmos.
+Place assets in a 200m x 200m world with grid-based terrain. Edit elevation, paint textures, and transform objects with visual gizmos.
 
 ### Script
 Configure NPC behaviors (idle, wander) and create branching dialogue trees with a visual node editor.
 
-### Play
-Explore your world in third-person. Walk, run, jump, and interact with NPCs to experience the dialogue you've authored.
+### Director Mode
+Describe a scene in natural language and get an AI-directed animated sequence with camera work, transitions, and effects.
 
-### Share
-Save worlds locally with auto-save. Export/import as JSON. (Cloud sharing coming in V2)
+### Theme Packs
+Generate cohesive sets of assets around a theme (e.g. "haunted graveyard") with a single prompt.
 
 ## Controls
 
@@ -45,25 +45,13 @@ Save worlds locally with auto-save. Export/import as JSON. (Cloud sharing coming
 - **Delete Tool:** Click assets to remove
 - **Undo/Redo:** Cmd/Ctrl+Z, Cmd/Ctrl+Shift+Z
 
-### Play Mode
-- **WASD:** Move
-- **Shift:** Run
-- **Space:** Jump
-- **Right-click drag:** Orbit camera
-- **Click NPC:** Talk
-- **ESC:** Return to editor
-
 ## Tech Stack
 
 - **UI:** Preact + Vite
 - **3D:** Three.js
-- **AI:** Gemini 3 Flash
+- **AI:** Gemini 3 Flash / Pro
 - **Dialogue Editor:** React Flow
 - **Storage:** IndexedDB
-
-## Documentation
-
-See [CLAUDE.md](./CLAUDE.md) for detailed architecture and development notes.
 
 ## License
 
