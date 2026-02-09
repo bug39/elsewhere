@@ -1,0 +1,15 @@
+.git
+.env
+.env.*
+!.env.example
+.claude
+.worktrees
+node_modules
+tests
+docs
+ai-studio-remake
+coverage
+test-results
+playwright-report
+*.md
+!package*.json
