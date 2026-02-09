@@ -78,7 +78,7 @@ function rateLimit(store, maxAttempts, windowMs, keyFn = req => req.ip || 'unkno
 
 // --- Middleware ---
 
-const COOKIE_SECRET = process.env.SESSION_SECRET || process.env.GEMINI_API_KEY || crypto.randomBytes(32).toString('hex')
+const COOKIE_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex')
 app.disable('x-powered-by')
 app.set('trust proxy', 1)
 app.use(cookieParser(COOKIE_SECRET))
@@ -281,10 +281,10 @@ app.post(
     return res.status(400).json({ error: 'Passcode required' })
   }
 
-  // Timing-safe comparison to prevent side-channel attacks
-  const a = Buffer.from(passcode)
-  const b = Buffer.from(process.env.JUDGE_PASSCODE)
-  const match = a.length === b.length && crypto.timingSafeEqual(a, b)
+  // Timing-safe comparison — HMAC both values to fixed-length buffers
+  // so the comparison never leaks the passcode length
+  const hmac = (val) => crypto.createHmac('sha256', COOKIE_SECRET).update(val).digest()
+  const match = crypto.timingSafeEqual(hmac(passcode), hmac(process.env.JUDGE_PASSCODE))
 
   if (match) {
     const cookieOptions = {
@@ -370,9 +370,12 @@ app.post('/api/proxy/*',
         signal: controller.signal
       })
 
-      const contentType = response.headers.get('content-type') || 'application/json'
+      if (!response.ok) {
+        console.error('[proxy] Upstream error:', response.status)
+        return res.status(response.status).json({ error: 'Generation failed' })
+      }
       const data = await response.text()
-      res.status(response.status).set('Content-Type', contentType).send(data)
+      res.status(200).set('Content-Type', 'application/json').send(data)
     } catch (err) {
       if (err.name === 'AbortError') {
         return res.status(504).json({ error: 'Generation service timeout' })
