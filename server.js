@@ -80,7 +80,7 @@ function rateLimit(store, maxAttempts, windowMs, keyFn = req => req.ip || 'unkno
 
 const COOKIE_SECRET = process.env.SESSION_SECRET || process.env.GEMINI_API_KEY || crypto.randomBytes(32).toString('hex')
 app.disable('x-powered-by')
-app.set('trust proxy', true)
+app.set('trust proxy', 1)
 app.use(cookieParser(COOKIE_SECRET))
 
 // Security headers
